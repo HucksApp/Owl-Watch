@@ -1,0 +1,11 @@
+@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400..700&family=Updock&display=swap');
+
+
+.App {
+  text-align: center;
+  width: 100%;  /* Width of the popup */
+  height: 100%; /* Height of the popup */
+  overflow: scroll;
+  padding-bottom: 5%;
+  margin-bottom: 5%;
+}

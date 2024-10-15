@@ -1,0 +1,23 @@
+{
+  "name": "owl_watch",
+  "version": "1.0.0",
+  "description": "Browser Extension for tab management",
+  "main": "server.js",
+  "scripts": {
+    "test": "test",
+    "start": "node server.js",
+    "dev": "npx nodemon --config nodemon.json && nodemon server.js"
+  },
+  "type": "module",
+  "author": "Hucks",
+  "license": "ISC",
+  "dependencies": {
+    "config": "^3.3.12",
+    "google-auth-library": "^9.14.2",
+    "jsonwebtoken": "^9.0.2",
+    "passport-google-oauth20": "^2.0.0"
+  },
+  "devDependencies": {
+    "nodemon": "^3.1.7"
+  }
+}

@@ -1,0 +1,29 @@
+@import url('https://fonts.googleapis.com/css2?family=Londrina+Sketch&display=swap');
+.callbackpage{
+    width: 100%;
+    height: 100%;
+    display: flex;
+   justify-content: center;
+   flex-direction: column;
+   align-items: center;
+}
+
+.callbackpageimage{
+    display: flex;
+   justify-content: center;
+   align-items: center;
+}
+.callbackpageimage img{
+    width: 70%;
+    height: 70%;
+}
+
+.callbackpagetitle{
+    display: flex;
+    justify-content: center;
+    font-weight: 1000;
+    font-size: 3em;
+    align-items: center;
+    text-align: center;
+    font-family: "Londrina Sketch", sans-serif;
+}

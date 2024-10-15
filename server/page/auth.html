@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OAuth Callback</title>
+  <link rel="stylesheet" href="/static/auth.css">
+</head>
+<body>
+
+  <div class="callbackpage">
+    <div class="callbackpageimage">
+      <img src="/static/logo.png" alt="">
+    </div>
+    <div class="callbackpagetitle">
+       OWL WATCH API
+    </div>
+  </div>
+
+
+
+
+  <script>
+    window.onload = function () {
+      // Get the token from the URL hash or query parameters
+      const params = new URLSearchParams(window.location.hash.substring(1)); // Remove the '#' from the hash
+      const token = params.get('id_token'); // Extract the ID token
+
+      if (token) {
+        // If the token exists, send it back to the main app via postMessage
+        window.opener.postMessage(
+          {
+            type: 'auth_response', // Custom message type to identify the response
+            token: token // The extracted token
+          },
+          'chrome-extension://paejibbeefdfbfccdhbloigdghcjnckg' // Your extension's origin
+        );
+
+        console.log('Token sent to main app:', token);
+
+        // Close the OAuth window safely
+        setTimeout(function () {
+          //window.close();
+        }, 500); // A small delay to ensure the token is sent before closing
+      } else {
+        console.error('ID token not found');
+      }
+    };
+  </script>
+</body>
+</html>

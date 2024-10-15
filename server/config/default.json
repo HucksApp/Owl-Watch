@@ -1,0 +1,12 @@
+{
+    "mongoPort": 5000,
+    "serverPort":8000,
+    "mongoURI": "mongodb://localhost:27017/owl_watchDB",
+    "Client_Base_Url":"http://localhost:3000",
+    "JWT_SECRET": "2b418b209553aa3acfd46931f68201404e6d67bea4b077eab467f8d545dfc67b1c0edbe913b7de488c944d07957a527cfb9a9d5cbdb596d47f1bd23d96570532",
+    "GOOGLE_CLIENT_ID": "507224401037-mp7gp6kl93bjnoquu6psdfmmibu4v281.apps.googleusercontent.com",
+    "GOOGLE_CLIENT_SECRET":"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",
+    "Google_Callback_URL":"http://localhost:8000/api/auth/google/callback",
+    "JWT_EXPIRES_IN": "2d",
+    "Stage":"development"
+}
