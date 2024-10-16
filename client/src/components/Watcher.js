@@ -14,17 +14,36 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { motion } from "framer-motion";
-
 /* global chrome */ // Required for Chrome extension API
 
-const Watch = () => {
-  const [watchMode, setWatchMode] = useState("all"); // "all", "urls", "exclude"
-  const [gapTime, setGapTime] = useState("5h"); // Default gap time (5 hours)
-  const [urls, setUrls] = useState(""); // To store comma-separated URLs
-  const [excludeUrls, setExcludeUrls] = useState(""); // To store exclude comma-separated URLs
-  const [isWatching, setIsWatching] = useState(false); // Track watch state
+/**
+ * Watch Component
+ *
+ * A component for managing "Tab Watch" settings. Allows users to monitor and control browser tab activity
+ * based on specified modes such as watching all tabs, specific URLs, or excluding specific URLs.
+ * It also provides gap time settings to determine the frequency of checks.
+ *
+ * @component
+ * @example
+ * // Usage example:
+ * <Watch />
+ *
+ * @returns {JSX.Element} A form for configuring and toggling tab watch settings.
+ *
+ * @description
+ * This component interacts with Chrome's extension APIs to send and manage watch settings,
+ * including gap time (e.g., 10m, 5h, or 2d), specific URLs to watch or exclude, and updates
+ * the watch status accordingly. It also displays current settings and offers a button to start or stop watching.
+ * The component includes animated transitions using the Framer Motion library.
+ */
 
-  // Effect to check the watch state and load saved settings on component mount
+const Watch = () => {
+  const [watchMode, setWatchMode] = useState("all");
+  const [gapTime, setGapTime] = useState("5h");
+  const [urls, setUrls] = useState("");
+  const [excludeUrls, setExcludeUrls] = useState("");
+  const [isWatching, setIsWatching] = useState(false);
+
   useEffect(() => {
     chrome.storage.local.get(["watchActive", "watchSettings"], (result) => {
       setIsWatching(result.watchActive || false);
@@ -32,8 +51,8 @@ const Watch = () => {
         const { gapTime, watchMode, urls, excludeUrls } = result.watchSettings;
         setGapTime(gapTime);
         setWatchMode(watchMode);
-        setUrls(urls.join(", ")); // Convert array back to comma-separated string
-        setExcludeUrls(excludeUrls.join(", ")); // Convert array back to comma-separated string
+        setUrls(urls.join(", "));
+        setExcludeUrls(excludeUrls.join(", "));
       }
     });
   }, []);
@@ -51,26 +70,24 @@ const Watch = () => {
           : [],
     };
 
-    // Send the watch settings to background.js
     chrome.runtime.sendMessage(
       { action: "startWatch", settings },
       (response) => {
-        console.log(response.status); // Log status returned from background.js
-        setIsWatching(true); // Update state to watching
+        console.log(response.status);
+        setIsWatching(true);
       }
     );
   };
 
-  // Handle Stop Watching
+
   const handleStopWatch = () => {
     chrome.runtime.sendMessage({ action: "stopWatch" }, (response) => {
-      console.log(response.status); // Log status returned from background.js
-      setIsWatching(false); // Update state to not watching
+      console.log(response.status);
+      setIsWatching(false);
       chrome.storage.local.set({ watchActive: false });
     });
   };
 
-  // Animation properties
   const animationProps = {
     initial: { opacity: 0, translateY: -20 },
     animate: { opacity: 1, translateY: 0 },
@@ -139,39 +156,39 @@ const Watch = () => {
       {/* Current Settings Display with Animation */}
       {isWatching && (
         <>
-            <motion.div
-              key="watch-settings"
-              {...animationProps} // Spread animation properties
+          <motion.div
+            key="watch-settings"
+            {...animationProps}
+          >
+            <Container
+              style={{
+                marginTop: "20px",
+                padding: "10px",
+                border: "1px solid #ccc",
+                borderRadius: "8px",
+                backgroundColor: "rgba(241, 241, 241, 0.7)",
+                overflow: "scroll",
+              }}
             >
-              <Container
-                style={{
-                  marginTop: "20px",
-                  padding: "10px",
-                  border: "1px solid #ccc",
-                  borderRadius: "8px",
-                  backgroundColor: "rgba(241, 241, 241, 0.7)",
-                  overflow: "scroll",
-                }}
-              >
-                <Typography variant="h6">Current Settings</Typography>
+              <Typography variant="h6">Current Settings</Typography>
+              <Typography variant="body1">
+                <strong>Watch Mode:</strong> {watchMode}
+              </Typography>
+              <Typography variant="body1">
+                <strong>Gap Time:</strong> {gapTime}
+              </Typography>
+              {watchMode === "urls" && (
                 <Typography variant="body1">
-                  <strong>Watch Mode:</strong> {watchMode}
+                  <strong>URLs to Watch:</strong> {urls}
                 </Typography>
+              )}
+              {watchMode === "exclude" && (
                 <Typography variant="body1">
-                  <strong>Gap Time:</strong> {gapTime}
+                  <strong>URLs to Exclude:</strong> {excludeUrls}
                 </Typography>
-                {watchMode === "urls" && (
-                  <Typography variant="body1">
-                    <strong>URLs to Watch:</strong> {urls}
-                  </Typography>
-                )}
-                {watchMode === "exclude" && (
-                  <Typography variant="body1">
-                    <strong>URLs to Exclude:</strong> {excludeUrls}
-                  </Typography>
-                )}
-              </Container>
-            </motion.div>
+              )}
+            </Container>
+          </motion.div>
         </>
       )}
 

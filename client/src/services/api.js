@@ -1,33 +1,73 @@
-// src/services/api.js
+/**
+ * API Service using Axios
+ *
+ * This module sets up an Axios instance for making API calls, including
+ * handling authentication tokens, request and response interception.
+ * It exports the configured Axios instance for use throughout the application.
+ *
+ * @module api
+ */
 
 import axios from 'axios';
 
 // Create an Axios instance
 const axiosInstance = axios.create({
-  baseURL: process.env.REACT_APP_API_BASE_URL, // Base URL from environment variables
-  withCredentials: true,     
-  timeout: 10000, // Set a timeout for requests (10 seconds)
-  headers: {
-    'Content-Type': 'application/json', // Set the default Content-Type
+    baseURL: process.env.REACT_APP_API_BASE_URL,
+    withCredentials: true,     
+    timeout: 10000,
+    headers: {
+      'Content-Type': 'application/json', // Set the default Content-Type
+    },
+  });
+  
+  
+/**
+ * Request Interceptor
+ *
+ * This interceptor attaches a Bearer token to the Authorization header of each request
+ * if a token is stored in local storage. This is useful for authenticated requests.
+ *
+ * @param {Object} config - The Axios request configuration object.
+ * @returns {Object} The modified request configuration object.
+ * @throws {Promise} Returns a promise rejecting the request with the error if an error occurs.
+ */
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('token');
+    if (token) {
+      config.headers.Authorization = `Bearer ${token}`;
+    }
+    return config;
   },
-});
+  (error) => {
+    // Handle the error before the request is sent
+    console.error('Request error:', error);
+    return Promise.reject(error);
+  }
+);
 
-
-// Response Interceptor
+/**
+ * Response Interceptor
+ *
+ * This interceptor handles responses from the server. It logs error responses and
+ * can perform actions based on the status code of the response, such as logging out
+ * a user for unauthorized access.
+ *
+ * @param {Object} response - The Axios response object.
+ * @returns {Object} The response object if successful.
+ * @throws {Promise} Returns a promise rejecting the response with the error if an error occurs.
+ */
 axiosInstance.interceptors.response.use(
   (response) => {
     // Handle the response data as needed
     return response;
   },
   (error) => {
-    // Handle response errors
     if (error.response) {
-      // The request was made, and the server responded with a status code
       console.error('Response error:', error.response.data);
       console.error('Status:', error.response.status);
       console.error('Headers:', error.response.headers);
-      // You can customize your error handling here
-      // Optionally, you can handle specific status codes
+  
       switch (error.response.status) {
         case 401:
           console.error('Unauthorized: Please log in again.');
@@ -57,4 +97,4 @@ axiosInstance.interceptors.response.use(
   }
 );
 
-export default axiosInstance; // Export the Axios instance
+export default axiosInstance;

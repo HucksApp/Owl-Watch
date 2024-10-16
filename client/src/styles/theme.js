@@ -1,7 +1,16 @@
 import { createTheme } from "@mui/material/styles";
-import backgroundImage from "../assets/owlwatch1.png"; // Example path for background image
-import logoImage from "../assets/logo.png"; // Example path for logo image
+import backgroundImage from "../assets/owlwatch1.png";
+import logoImage from "../assets/logo.png";
 
+/**
+ * Creates the light theme for the application using Material-UI's createTheme.
+ *
+ * This theme includes customizations for the color palette, typography,
+ * and component styles specific to the light mode of the application.
+ *
+ * @constant {Object} lightTheme
+ * @returns {Object} The customized light theme for the application.
+ */
 const lightTheme = createTheme({
   palette: {
     mode: "light",
@@ -47,12 +56,12 @@ const lightTheme = createTheme({
           textTransform: "0.2s",
           backgroundColor: "#7209b7",
           color: "#f1f1f1",
-          border: "none", // No border
+          border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
-            backgroundColor: "#262525", // Change background on hover
-            color: "#f1f1f1", // Optionally change text color on hover
+            backgroundColor: "#262525",
+            color: "#f1f1f1",
             opacity: "0.6",
           },
         },
@@ -64,12 +73,12 @@ const lightTheme = createTheme({
           textTransform: "0.2s",
           backgroundColor: "#7209b7",
           color: "#f1f1f1",
-          border: "none", // No border
+          border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
-            backgroundColor: "#262525", // Change background on hover
-            color: "#f1f1f1", // Optionally change text color on hover
+            backgroundColor: "#262525",
+            color: "#f1f1f1",
             opacity: "0.6",
           },
         },
@@ -86,18 +95,19 @@ const lightTheme = createTheme({
     MuiListItemText: {
       styleOverrides: {
         root: {
-          fontSize: "14px", // Adjust font size as needed
+          fontSize: "14px",
           fontWeight: "1000",
           flexWrap: "wrap",
+          overflow: "hidden",
         },
         primary: {
-          fontSize: "16px", // Customize primary text size
-          fontWeight: "bolder", // Primary text font weight
+          fontSize: "16px",
+          fontWeight: "bolder",
         },
         secondary: {
-          fontSize: "8px", // Customize secondary text size
+          fontSize: "8px",
           color: "#775c2c",
-          fontWeight: "bold", // Secondary text font weight
+          fontWeight: "bold",
         },
       },
     },
@@ -119,7 +129,7 @@ const lightTheme = createTheme({
     MuiInputLabel: {
       styleOverrides: {
         root: {
-          fontWeight: "bold", // Label font weight
+          fontWeight: "bold",
         },
         shrink: {
           padding: "10px",
@@ -137,7 +147,7 @@ const lightTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundImage: `url(${backgroundImage})`, // Set global background image
+          backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "contain",
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
@@ -148,10 +158,10 @@ const lightTheme = createTheme({
       styleOverrides: {
         root: {
           backgroundColor: "#262525",
-          color: "#f1f1f1", // Primary color for AppBar
+          color: "#f1f1f1",
           "& img": {
-            content: `url(${logoImage})`, // Set logo image in AppBar
-            height: "40px", // Adjust size of the logo
+            content: `url(${logoImage})`,
+            height: "40px",
             marginRight: "10px",
           },
         },
@@ -159,6 +169,16 @@ const lightTheme = createTheme({
     },
   },
 });
+
+/**
+ * Creates the dark theme for the application using Material-UI's createTheme.
+ *
+ * This theme includes customizations for the color palette, typography,
+ * and component styles specific to the dark mode of the application.
+ *
+ * @constant {Object} darkTheme
+ * @returns {Object} The customized dark theme for the application.
+ */
 
 const darkTheme = createTheme({
   palette: {
@@ -200,12 +220,12 @@ const darkTheme = createTheme({
           textTransform: "0.2s",
           backgroundColor: "#7209b7",
           color: "#f1f1f1",
-          border: "none", // No border
+          border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
-            backgroundColor: "#f1f1f1", // Change background on hover
-            color: "#262525", // Optionally change text color on hover
+            backgroundColor: "#f1f1f1",
+            color: "#262525",
             opacity: "0.6",
           },
         },
@@ -217,12 +237,12 @@ const darkTheme = createTheme({
           textTransform: "0.2s",
           backgroundColor: "#7209b7",
           color: "#f1f1f1",
-          border: "none", // No border
+          border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
-            backgroundColor: "#f1f1f1", // Change background on hover
-            color: "#262525", // Optionally change text color on hover
+            backgroundColor: "#f1f1f1",
+            color: "#262525",
             opacity: "0.6",
           },
         },
@@ -239,18 +259,19 @@ const darkTheme = createTheme({
     MuiListItemText: {
       styleOverrides: {
         root: {
-          fontSize: "14px", // Adjust font size as needed
+          fontSize: "14px",
           fontWeight: "1000",
           flexWrap: "wrap",
+          overflow: "hidden",
         },
         primary: {
-          fontSize: "16px", // Customize primary text size
-          fontWeight: "bolder", // Primary text font weight
+          fontSize: "16px",
+          fontWeight: "bolder",
         },
         secondary: {
-          fontSize: "8px", // Customize secondary text size
+          fontSize: "8px",
           color: "#1976d2",
-          fontWeight: "bold", // Secondary text font weight
+          fontWeight: "bold",
         },
       },
     },
@@ -295,37 +316,55 @@ const darkTheme = createTheme({
   },
 });
 
+/**
+ * Animation variants for page transitions within the application.
+ *
+ * This object defines the initial, animate, and exit states for page
+ * animations to create smooth transitions between different views.
+ *
+ * @constant {Object} pageVariants
+ * @returns {Object} The animation variants for page transitions.
+ */
 const pageVariants = {
   initial: {
     opacity: 0,
-    x: 20,        // Reduced offset for smoother entry
-    scale: 0.7,   // Slight scale for more subtlety
+    x: 20,
+    scale: 0.7,
   },
   animate: {
     opacity: 1,
     x: 0,
     scale: 1,
     transition: {
-      duration: 0.6,  // Increased duration for smoother appearance
-      ease: "easeInOut", // Smooth easing function
+      duration: 0.6,
+      ease: "easeInOut",
     },
   },
   exit: {
     opacity: 0,
-    y: 20,        // Smaller offset for smoother exit
+    y: 20,
     scale: 0.9,
     transition: {
-      duration: 0.2,  // Slightly faster exit for responsiveness
-      ease: "easeInOut", // Consistent easing for both entry and exit
+      duration: 0.2,
+      ease: "easeInOut",
     },
   },
 };
 
-const pageTransition = {
-  type: "tween",   // Use 'tween' for smoother transition
-  ease: "easeInOut",  // A natural, smooth easing curve
-  duration: 0.5,      // Adjust to match the 'animate' transition
-};
+/**
+ * Transition configuration for page animations.
+ *
+ * This object defines the type, ease, and duration of transitions for
+ * the page animations, providing a cohesive visual experience.
+ *
+ * @constant {Object} pageTransition
+ * @returns {Object} The transition configuration for page animations.
+ */
 
+const pageTransition = {
+  type: "tween",
+  ease: "easeInOut",
+  duration: 0.5,
+};
 
 export { lightTheme, darkTheme, pageVariants, pageTransition };

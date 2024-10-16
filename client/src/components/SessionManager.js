@@ -1,5 +1,4 @@
-// src/components/SessionManager.js
-import React, { useState, useEffect,useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import {
   Button,
   IconButton,
@@ -16,15 +15,28 @@ import {
   Restore as RestoreIcon,
 } from "@mui/icons-material";
 import { format } from "date-fns";
-import { useCommandStructure } from '../contexts/CommandStructureContext';
+import { useCommandStructure } from "../contexts/CommandStructureContext";
 /* global chrome */ // Add this line to inform ESLint
 
-const SessionManager = () => {
+/**
+ * SessionManager Component
+ *
+ * A component for managing browser sessions. It allows users to save, restore, and delete sessions,
+ * with the session list being dynamically updated
+ *
+ * @component
+ * @example
+ * // Usage example:
+ * <SessionManager />
+ *
+ * @returns {JSX.Element} A session management interface with options to save, restore, and delete sessions.
+ */
 
-  const { sessions, saveSession, deleteSession, restoreSession } = useCommandStructure();
+const SessionManager = () => {
+  const { sessions, saveSession, deleteSession, restoreSession } =
+    useCommandStructure();
   const [sessionName, setSessionName] = useState("");
   const listRef = useRef(null);
-
 
   useEffect(() => {
     if (listRef.current) {
@@ -34,13 +46,13 @@ const SessionManager = () => {
 
   const handleSaveSession = () => {
     if (sessionName) {
-        saveSession(sessionName);
-        setSessionName("");
-        if (listRef.current) {
-          listRef.current.scrollTop = listRef.current.scrollHeight;
-        }
+      saveSession(sessionName);
+      setSessionName("");
+      if (listRef.current) {
+        listRef.current.scrollTop = listRef.current.scrollHeight;
+      }
     }
-};
+  };
 
   return (
     <div>
@@ -83,11 +95,13 @@ const SessionManager = () => {
               }
             >
               <ListItemText
-                primary={session.name? session.name: "No Name"}
+                primary={session.name ? session.name : "No Name"}
                 secondary={
-                  session.updatedAt && !isNaN(new Date(session.updatedAt).getTime())
+                  session.updatedAt &&
+                  !isNaN(new Date(session.updatedAt).getTime())
                     ? `${format(new Date(session.updatedAt), "PPPpp")}`
-                    : session.createdAt && !isNaN(new Date(session.createdAt).getTime())
+                    : session.createdAt &&
+                      !isNaN(new Date(session.createdAt).getTime())
                     ? `${format(new Date(session.createdAt), "PPPpp")}`
                     : "Recent"
                 }

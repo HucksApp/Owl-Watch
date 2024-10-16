@@ -1,11 +1,10 @@
 import "./styles/App.css";
-import React, { useState,useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { HashRouter as Router, Route, Routes } from "react-router-dom";
 import { AuthProvider } from "./contexts/AuthContext";
 import Dashboard from "./pages/Dashboard";
 import TabManager from "./components/TabManager";
 import SessionManager from "./components/SessionManager";
-import Settings from "./components/Settings";
 import QuickActions from "./components/QuickActions";
 import TabSuggestions from "./components/TabSuggestions";
 import Login from "./pages/Login";
@@ -22,9 +21,24 @@ import {
   getFromLocalStorage,
 } from "./services/localStorage.js";
 
+/**
+ * Main application component that handles routing, theme management, and context providers.
+ *
+ * @returns {JSX.Element} The rendered application.
+ */
+
 const App = () => {
+  /**
+   * State to manage the current theme (dark/light mode).
+   * @type {[boolean, function]}
+   */
   const [isDarkMode, setIsDarkMode] = useState(false);
 
+  /**
+   * Toggles the theme between dark and light mode and saves the preference in local storage.
+   *
+   * @returns {void}
+   */
   const toggleTheme = () => {
     const newTheme = !isDarkMode;
     setIsDarkMode(newTheme);
@@ -32,6 +46,12 @@ const App = () => {
     saveToLocalStorage("theme", newTheme ? "dark" : "light");
   };
 
+  /**
+   * Effect to fetch the saved theme preference from local storage on component mount.
+   * Updates the isDarkMode state based on the saved preference.
+   *
+   * @returns {void}
+   */
   useEffect(() => {
     const fetchTheme = async () => {
       const savedTheme = await getFromLocalStorage("theme");
@@ -42,7 +62,7 @@ const App = () => {
       }
     };
     fetchTheme();
-  }, []); // Run only on mount
+  }, []);
 
   return (
     <Router>
@@ -94,8 +114,6 @@ const App = () => {
                     <Route path="quick_actions" element={<QuickActions />} />
 
                     <Route path="AI_suggest" element={<TabSuggestions />} />
-
-                    <Route path="settings" element={<Settings />} />
                   </Route>
                 </Routes>
               </AnimatePresence>
