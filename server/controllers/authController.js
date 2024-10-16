@@ -1,32 +1,65 @@
-import config from 'config'
-import { OAuth2Client } from 'google-auth-library';
-import User from '../models/userModel.js';
-import path from 'path';
-import { fileURLToPath } from 'url'; // Import necessary module for __dirname workaround
+import config from "config";
+import { OAuth2Client } from "google-auth-library";
+import User from "../models/userModel.js";
+import path from "path";
+import { fileURLToPath } from "url";
+
+/**
+ * Module for handling Google OAuth authentication.
+ *
+ * This module contains functions to manage Google OAuth authentication, including:
+ * 1. Serving the Google OAuth callback page.
+ * 2. Logging in a user with Google OAuth tokens.
+ * 3. Logging out the current user.
+ *
+ * It integrates with the Google OAuth2 client and uses a MongoDB user model to store user
+ * information. Upon successful authentication, it creates a user if one does not exist.
+ *
+ * @module AuthController
+ */
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-// Google OAuth callback
+/**
+ * Handles the Google OAuth callback by serving the authentication HTML page.
+ *
+ * @function
+ * @param {Object} req - The request object from the client.
+ * @param {Object} res - The response object used to send a response to the client.
+ * @returns {void} Sends the auth.html file to the client.
+ */
 export const googleCallback = (req, res) => {
-  res.sendFile(path.join(__dirname, '..', 'page', 'auth.html')); // Ensure correct file path
+  res.sendFile(path.join(__dirname, "..", "page", "auth.html"));
 };
 
-
+/**
+ * Authenticates a user using a Google OAuth token.
+ *
+ * This function verifies the provided ID token from Google, checks if the user exists
+ * in the database, and if not, creates a new user. Upon successful authentication,
+ * it logs the user in and responds with a success message.
+ *
+ * @async
+ * @function
+ * @param {Object} req - The request object containing the token in the body.
+ * @param {Object} res - The response object used to send a response to the client.
+ * @returns {void} Responds with a success message and token or an error message.
+ */
 export const googleLogin = async (req, res) => {
-  const client = new OAuth2Client(config.get('GOOGLE_CLIENT_ID'));
-  const { token } = req.body; // Get the token from query params
-  console.log(token)
+  const client = new OAuth2Client(config.get("GOOGLE_CLIENT_ID"));
+  const { token } = req.body;
+  console.log(token);
 
   if (!token) {
-    return res.status(400).json({ message: 'Token is required' });
+    return res.status(400).json({ message: "Token is required" });
   }
 
   try {
     // Verify the ID token
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: config.get('GOOGLE_CLIENT_ID'),
+      audience: config.get("GOOGLE_CLIENT_ID"),
     });
 
     const payload = ticket.getPayload();
@@ -43,32 +76,39 @@ export const googleLogin = async (req, res) => {
       await user.save();
     }
 
-    // Log the user in using Passport.js
     req.logIn(user, (err) => {
       if (err) {
-        console.error('Error logging in user:', err);
-        return res.redirect(`${config.get('Client_Base_Url')}/login`); // Redirect to login on error
+        console.error("Error logging in user:", err);
+        return res.redirect(`${config.get("Client_Base_Url")}/login`); // Redirect to login on error
       }
 
       res.status(200).json({ token });
     });
   } catch (err) {
-    console.error('Error during Google token verification:', err);
-    return res.status(500).json({ message: 'Authentication failed' });
+    console.error("Error during Google token verification:", err);
+    return res.status(500).json({ message: "Authentication failed" });
   }
 };
 
-
-
-
+/**
+ * Logs out the current user.
+ *
+ * This function handles user logout, invalidating the session and responding with a
+ * success message.
+ *
+ * @function
+ * @param {Object} req - The request object containing the user's session.
+ * @param {Object} res - The response object used to send a response to the client.
+ * @returns {void} Responds with a success message or an error message on failure.
+ */
 
 export const logout = (req, res) => {
-  console.log("here")
-    req.logout((err) => {
-        if (err) {
-            console.error('Logout error:', err);
-            return res.status(500).send('Could not log out');
-        }
-        res.status(200).json({message: "logout"});
-    });
+  console.log("here");
+  req.logout((err) => {
+    if (err) {
+      console.error("Logout error:", err);
+      return res.status(500).send("Could not log out");
+    }
+    res.status(200).json({ message: "logout" });
+  });
 };
