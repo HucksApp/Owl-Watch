@@ -5,7 +5,6 @@ import { AuthContext } from "../contexts/AuthContext";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import GoogleIcon from "@mui/icons-material/Google";
-import "../styles/login.css";
 
 /**
  * Login Component
