@@ -22,8 +22,8 @@ Chrome browser (tab and session manager) app UI
 │     │     ├──📄 /ComandStructureContext.js  # worker utility Context
 │     │     └──📄 /VoiceComandContext.js      # Voice Commands utility Context
 │     ├──📁 /page/                            # main pages/ main routes
-│     │     ├──📄 /Login.js                   # react compoent
-│     │     └──📄 /Dashboard.js               # react compoent
+│     │     ├──📄 /Login.js                   # react component
+│     │     └──📄 /Dashboard.js               # react component
 │     ├──📁 /services/                        # services used
 │     │     ├──📄 /api.js                     # api services (Axios configuration)
 │     │     └──📄 /localstorage.js            # cache data management
