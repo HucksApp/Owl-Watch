@@ -2,7 +2,7 @@
 Owl Watch is a Chrome extension designed to help users manage their tabs efficiently, with features that allow tracking, closing inactive tabs, removing dublication, voice command and improving productivity
 
 
-[CLIENT  (Frontend UI)](./client) 
+# [CLIENT  (Frontend UI)](./client) 
 ## 🧰 Features
 ### UI/UX 📱⇢💻
 
