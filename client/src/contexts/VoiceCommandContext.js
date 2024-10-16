@@ -80,10 +80,14 @@ export const VoiceCommandProvider = ({ children }) => {
     };
 
     useEffect(() => {
-        if (recognition && listening) {
-            startRecognition(recognition);
-        } else if (recognition) {
-            recognition.stop();
+        if (recognition) {
+            if (listening) {
+                console.log("Recognition is starting...");
+                startRecognition(recognition); // Start only when listening is true
+            } else {
+                console.log("Recognition stopped.");
+                recognition.stop();
+            }
         }
     }, [listening, recognition]);
 

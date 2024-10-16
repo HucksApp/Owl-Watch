@@ -1,4 +1,3 @@
-// background.js
 
 // Store interval ID globally to clear it when needed
 let watchInterval = null;
@@ -10,12 +9,11 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       const { gapTime, watchMode, urls, excludeUrls } = request.settings;
       console.log('Starting tab watch with settings:', request.settings);
 
-      if (watchInterval) {
-          clearInterval(watchInterval);
-      }
+      // Stop any existing alarms
+      chrome.alarms.clear('watchAlarm');
 
       startWatch({ gapTime, watchMode, urls, excludeUrls });
-      
+
       // Save watch state and settings
       chrome.storage.local.set({ 
           watchActive: true,
@@ -24,30 +22,39 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
       
       sendResponse({ status: 'watch_started' });
   } else if (request.action === 'stopWatch') {
-      if (watchInterval) {
-          clearInterval(watchInterval);
-          watchInterval = null;
-      }
+      // Clear the alarm if stopping the watch
+      chrome.alarms.clear('watchAlarm');
       chrome.storage.local.set({ watchActive: false }); // Save watch state
       sendResponse({ status: 'watch_stopped' });
   }
 });
 
-
-
 // Start the watch process
 const startWatch = (settings) => {
     const { gapTime } = settings;
 
-    // Run the check immediately, then set the interval
+    // Run the check immediately, then create an alarm for repeated checks
     checkTabs(settings);
 
-    watchInterval = setInterval(() => {
-        checkTabs(settings);
-    }, parseGapTimeToMilliseconds(gapTime));
+    // Schedule an alarm to run `checkTabs` at intervals based on `gapTime`
+    chrome.alarms.create('watchAlarm', {
+        delayInMinutes: parseGapTimeToMinutes(gapTime),
+        periodInMinutes: parseGapTimeToMinutes(gapTime)
+    });
 };
 
-// Check and manage tabs
+// Listener for alarms
+chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === 'watchAlarm') {
+        chrome.storage.local.get('watchSettings', (data) => {
+            if (data.watchSettings) {
+                checkTabs(data.watchSettings);  // Run the `checkTabs` function using the saved settings
+            }
+        });
+    }
+});
+
+
 // Check and manage tabs
 const checkTabs = (settings) => {
   const { gapTime } = settings;
@@ -136,7 +143,7 @@ const removeDuplicateTabs = (tabs) => {
 // Update lastAccessed when a tab is activated
 chrome.tabs.onActivated.addListener(activeInfo => {
   chrome.tabs.get(activeInfo.tabId, (tab) => {
-    if (tab.url) {
+    if (tab && tab.url) {
       // Get both sessions (tabManagerSession and owl_watch_session)
       chrome.storage.local.get(['owl_watch_session', 'tabManagerSession'], (result) => {
         const tabManagerSession = result.tabManagerSession || { tabs: [] };
@@ -185,6 +192,11 @@ const getTabsToClose = (currentTabs, cachedSession, gapTime, watchMode, urls, ex
             return false;
         }
 
+        if (tab.active) {
+          console.log(`Skipping active tab: ${tab.url}`);
+          return false;
+      }
+
         // Check if the last accessed date is valid
         const lastAccessedDate = new Date(cachedTab.lastAccessed);
         if (isNaN(lastAccessedDate.getTime())) {
@@ -221,25 +233,41 @@ const closeTabs = (tabsToClose) => {
     });
 };
 
+// Parse the gap time into minutes for alarms
+const parseGapTimeToMinutes = (gapTime) => {
+  const timeMultiplier = {
+      m: 1,  
+      h: 60,
+      d: 24 * 60,
+  };
+  const unit = gapTime.slice(-1);
+  const amount = parseInt(gapTime.slice(0, -1), 10);
+  const minutes = amount * timeMultiplier[unit];
+  
+  console.log(`Parsed gap time "${gapTime}" to ${minutes} minutes`); // Debugging
+  return minutes;
+};
+
 // Parse the gap time into milliseconds
 const parseGapTimeToMilliseconds = (gapTime) => {
-    const timeMultiplier = {
-        m: 60 * 1000,  
-        h: 60 * 60 * 1000,
-        d: 24 * 60 * 60 * 1000,
-    };
-    const unit = gapTime.slice(-1);
-    const amount = parseInt(gapTime.slice(0, -1), 10);
-    const milliseconds = amount * timeMultiplier[unit];
-    
-    console.log(`Parsed gap time "${gapTime}" to ${milliseconds} milliseconds`); // Debugging
-    return milliseconds;
+  const timeMultiplier = {
+      m: 60 * 1000,  
+      h: 60 * 60 * 1000,
+      d: 24 * 60 * 60 * 1000,
+  };
+  const unit = gapTime.slice(-1);
+  const amount = parseInt(gapTime.slice(0, -1), 10);
+  const milliseconds = amount * timeMultiplier[unit];
+  
+  console.log(`Parsed gap time "${gapTime}" to ${milliseconds} milliseconds`); // Debugging
+  return milliseconds;
 };
 
 // Add time to the current date based on gap time
 const addTimeToCurrentDate = (gapTime) => {
-    return new Date(Date.now() + parseGapTimeToMilliseconds(gapTime)).toISOString(); // Store as ISO string
+  return new Date(Date.now() + parseGapTimeToMilliseconds(gapTime)).toISOString(); // Store as ISO string
 };
+
 
 // Retrieve session for debugging purposes
 chrome.storage.local.get(['owl_watch_session'], (result) => {
@@ -348,4 +376,21 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     });
     return true;  // Keeps the channel open for async response
   }
+});
+
+
+
+
+
+
+chrome.runtime.onInstalled.addListener(() => {
+  console.log("Service worker started.");
+
+  // Test if chrome.alarms API is available
+  chrome.alarms.create('testAlarm', { delayInMinutes: 1 });
+  chrome.alarms.onAlarm.addListener((alarm) => {
+    if (alarm.name === 'testAlarm') {
+      console.log('Test alarm triggered');
+    }
+  });
 });
