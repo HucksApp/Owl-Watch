@@ -55,9 +55,9 @@ UI                    |   Description         |       Action/Command
 ----------------------|------------------------|----------------- 
 Tab Manager | see all tabs, tab info, and state (active/ inactive) | delete, delete inactive, delete all
 Session Manager | see all saved different sessions| restore saved session, delete saved session, save current session
-Watcher | background tab and session watcher, remove dublicate url, remove inactive tabs on ***Gap Time*** based on Settings|  set <GapTime> in m(minutes), h(hours), d(days).. e.g  2d
+Watcher | background tab and session watcher, remove dublicate url, remove inactive tabs on ***Gap Time*** based on Settings|  set ***GapTime*** in m(minutes), h(hours), d(days).. e.g  2d
 ✅      |   ✅ | set Watch Option all(all tabs in current session), all except specific URLs(urls seperated by commas, any match  is been exempted from the watch), watch specific URLs(urls seperated by commas, any match is been watched)
-Voice Command | execute Voice command in short designed time while icon shows active| Close <baseMatch> (match any url that base word), close non-active tabs, close all tabs, restore session (restore last session), delete session (delete last session), save session (save current session)
+Voice Command | execute Voice command in short designed time while icon shows active| Close ***baseMatch*** (match any url that base word), close non-active tabs, close all tabs, restore session (restore last session), delete session (delete last session), save session (save current session)
 Quick Actions |  see quick session and tab maintainance buttons in one place |   ✅
 Theme | Light and Dark Theme |      🖤        🤍
 
