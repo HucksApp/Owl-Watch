@@ -14,7 +14,7 @@ import {
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 import { motion } from "framer-motion";
-/* global chrome */ // Required for Chrome extension API
+/* global chrome */ // Chrome extension API
 
 /**
  * Watch Component

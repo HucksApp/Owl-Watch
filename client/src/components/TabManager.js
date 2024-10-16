@@ -12,10 +12,9 @@ import {
   Container,
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
-import BlindsClosedIcon from "@mui/icons-material/BlindsClosed";
 import { useCommandStructure } from "../contexts/CommandStructureContext";
 import { format } from "date-fns";
-/* global chrome */ // Add this line to inform ESLint
+/* global chrome */ // Chrome extension API
 
 /**
  * TabManager Component

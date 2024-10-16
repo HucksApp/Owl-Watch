@@ -16,7 +16,7 @@ import {
 } from "@mui/icons-material";
 import { format } from "date-fns";
 import { useCommandStructure } from "../contexts/CommandStructureContext";
-/* global chrome */ // Add this line to inform ESLint
+/* global chrome */ // Chrome extension API
 
 /**
  * SessionManager Component
