@@ -34,6 +34,7 @@ Owl Watch is a Chrome extension designed to help users manage their tabs efficie
 - Transport: http
 - Authentication: Passport, Google Oauth
 - Database: MongoDb
+- Others: Chrome ApI
 
 
 ## ⛩ Project Structure
