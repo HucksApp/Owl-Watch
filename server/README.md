@@ -51,5 +51,7 @@ Owl watch Authentication and storage server.
 $ git clone https://github.com/HucksApp/Owl-Watch
 $ cd server
 $ npm install
-$ npm start # run Locally  or npm run dev (for nodemon development server)
+$ npm start # run Locally
+ or
+$ npm run dev  # for nodemon development server
 ```
