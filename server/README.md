@@ -1,7 +1,8 @@
 
 # Server
 Owl watch Authentication and storage server.
-⛩ Project Structure
+
+## ⛩ Project Structure
 ```
 📁 /Owl_Watch/
 │
