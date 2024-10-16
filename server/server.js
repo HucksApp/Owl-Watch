@@ -4,7 +4,6 @@ import allRoutes from './debug/debug.js';
 import config from 'config'
 
 
-
 const server = http.createServer(app);
 if (config.get('Stage') === 'development')
     allRoutes(app);
