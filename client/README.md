@@ -53,7 +53,7 @@ Chrome browser (tab and session manager) app UI
 
 UI                    |   Description         |       Action/Command
 ----------------------|------------------------|----------------- 
-Tab Manager | see all tabs, tab info, and state (active/ inactive) | delete, delete inactive, delete all
+Tab Manager | see all tabs, tab info, and state (active/ inactive) | delete, delete inactive, delete all, group tabs to new window, rearrange tabs window(drag and drop), save group to a session 
 Session Manager | see all saved sessions| restore saved session, delete saved session, save current session
 Watcher | background tab and session watcher, remove dublicate url, remove inactive tabs on ***Gap Time*** based on Settings|  set ***GapTime*** in m(minutes), h(hours), d(days).. e.g  2d
 ✅      |   ✅ | set Watch Option all(all tabs in current session), all except specific URLs(urls seperated by commas, any match  is been exempted from the watch), watch specific URLs(urls seperated by commas, any match is been watched)
