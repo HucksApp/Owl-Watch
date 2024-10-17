@@ -55,6 +55,7 @@ const CommandStructureContext = createContext();
 
 export const CommandStructureProvider = ({ children }) => {
   const [tabs, setTabs] = useState([]);
+  const [highlightedTabs, setHighlightedTabs] = useState([]);
   const [sessions, setSessions] = useState([]);
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
@@ -81,6 +82,66 @@ export const CommandStructureProvider = ({ children }) => {
     });
   };
 
+
+
+  // Function to rearrange tabs within the same window based on dragging
+  const reorderTabs = (startIndex, endIndex) => {
+    const reorderedTabs = Array.from(tabs);
+    const [movedTab] = reorderedTabs.splice(startIndex, 1);
+    reorderedTabs.splice(endIndex, 0, movedTab);
+    setTabs(reorderedTabs);
+
+    // Update the tab order in Chrome
+    chrome.tabs.move(movedTab.id, { index: endIndex });
+  };
+
+  // Function to move highlighted tabs to a new window
+  const moveHighlightedTabsToNewWindow = () => {
+    if (highlightedTabs.length) {
+      chrome.windows.create({ tabId: highlightedTabs[0].id }, (newWindow) => {
+        highlightedTabs.slice(1).forEach((tab) => {
+          chrome.tabs.move(tab.id, { windowId: newWindow.id, index: -1 });
+        });
+      });
+    }
+  };
+
+  // Function to save highlighted tabs as a session
+  const saveHighlightedTabsAsSession = async (sessionName) => {
+    const formattedTabs = highlightedTabs.map((tab) => ({
+      url: tab.url,
+      title: tab.title,
+      active: tab.active,
+      lastAccessed: new Date(),
+    }));
+    try {
+      await axios.post(`${BASE_URL}/api/session/save`, {
+        name: sessionName,
+        tabs: formattedTabs,
+      });
+      setSessions([...sessions, { name: sessionName }]);
+    } catch (error) {
+      console.error("Error saving session:", error);
+    }
+  };
+
+  // Function to handle highlighting tabs
+  const toggleTabHighlight = (tabId) => {
+    setHighlightedTabs((prev) => {
+      if (prev.some((tab) => tab.id === tabId)) {
+        return prev.filter((tab) => tab.id !== tabId);
+      }
+      return [...prev, tabs.find((tab) => tab.id === tabId)];
+    });
+  };
+
+
+
+
+
+
+
+  
   // Function to close tab by matching title or URL
   const closeTabByMatch = (match) => {
     const tabToClose = tabs.find(
@@ -197,6 +258,11 @@ export const CommandStructureProvider = ({ children }) => {
         saveSession,
         restoreSession,
         deleteSession,
+        highlightedTabs,
+        toggleTabHighlight,
+        reorderTabs,
+        moveHighlightedTabsToNewWindow,
+        saveHighlightedTabsAsSession,
       }}
     >
       {children}
