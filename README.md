@@ -17,6 +17,7 @@ Owl Watch is a Chrome extension designed to help users manage their tabs efficie
 - Connects with the Owl Watch (Backend)
 - Authentication
 - session storage
+- Session state Mutation
 ### Frontend Technology Stack 📚
 * Framework: React.js
 * Caching: Chrome Local storage
