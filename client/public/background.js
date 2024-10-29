@@ -4,8 +4,9 @@
  * the watch process, checking tab activity, and closing inactive tabs based on user settings.
  */
 
-// Store interval ID globally to clear it when needed
-let watchInterval = null;
+
+let watchInterval = null; //Global  Value for  Watch Interval
+let autoGroupingEnabled = false; // Global  Value for Auto Grouping
 
 /**
  * Listen for messages for session start and stop watcher tracking.
@@ -25,6 +26,68 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.alarms.clear("watchAlarm");
     chrome.storage.local.set({ watchActive: false });
     sendResponse({ status: "watch_stopped" });
+  }else   if (message.type === "Toggle_Auto_Grouping") {
+    autoGroupingEnabled = message.enabled; // Toggle autoGroupingEnabled based on message
+
+    if (autoGroupingEnabled) {
+      // Add the tab update listener when enabled
+      chrome.tabs.onUpdated.addListener(handleTabGrouping);
+    } else {
+      // Remove the tab update listener when disabled
+      chrome.tabs.onUpdated.removeListener(handleTabGrouping);
+    }
+
+    // Send response back to the message sender
+    sendResponse({ status: "success", autoGroupingEnabled });
+  }else   if (request.message === "getTabs") {
+    // Get all current tabs, not just active ones
+    chrome.tabs.query({}, (tabs) => {
+      chrome.storage.local.get("owl_watch_session", (result) => {
+        const session = result.owl_watch_session || { tabs: [] };
+
+        // Enrich the tab data with last accessed time
+        const enrichedTabs = tabs.map((tab) => {
+          const cachedTab = session.tabs.find((t) => t.id === tab.id);
+          return {
+            ...tab,
+            lastAccessed: cachedTab ? cachedTab.lastAccessed : "Unknown",
+          };
+        });
+
+        sendResponse(enrichedTabs);
+      });
+    });
+    return true;
+  } else if (request.message === "closeTab") {
+    // Close a specific tab by tabId
+    const { tabId } = request;
+    chrome.tabs.remove(tabId, () => {
+      sendResponse({ status: "Tab closed" });
+    });
+    return true;
+  } else if (request.message === "closeNonActiveTabs") {
+    // Close all non-active tabs
+    chrome.tabs.query({}, (tabs) => {
+      const nonActiveTabs = tabs.filter((tab) => !tab.active);
+      nonActiveTabs.forEach((tab) => {
+        chrome.tabs.remove(tab.id, () => {
+          console.log(`Closed non-active tab: ${tab.url}`);
+        });
+      });
+      sendResponse({ status: "Non-active tabs closed" });
+    });
+    return true;
+  } else if (request.message === "closeAllTabs") {
+    // Close all open tabs
+    chrome.tabs.query({}, (tabs) => {
+      tabs.forEach((tab) => {
+        chrome.tabs.remove(tab.id, () => {
+          console.log(`Closed tab: ${tab.url}`);
+        });
+      });
+      sendResponse({ status: "All tabs closed" });
+    });
+    return true;
   }
 });
 
@@ -67,77 +130,49 @@ const checkTabs = (settings) => {
   const { gapTime } = settings;
 
   chrome.tabs.query({}, (tabs) => {
-    chrome.storage.local.get(
-      ["owl_watch_session", "tabManagerSession"],
-      (result) => {
-        const cachedOwlSession = result.owl_watch_session || { tabs: [] };
-        const cachedTabManagerSession = result.tabManagerSession || {
-          tabs: [],
-        };
-        const currentTabs = tabs.map((tab) => {
-          const owlCachedTab = cachedOwlSession.tabs.find(
-            (cachedTab) => cachedTab.url === tab.url
-          );
-          const tabManagerCachedTab = cachedTabManagerSession.tabs.find(
-            (cachedTab) => cachedTab.url === tab.url
-          );
-
-          const lastAccessed =
-            owlCachedTab && tabManagerCachedTab
-              ? new Date(owlCachedTab.lastAccessed) >
-                new Date(tabManagerCachedTab.lastAccessed)
-                ? owlCachedTab.lastAccessed
-                : tabManagerCachedTab.lastAccessed
-              : owlCachedTab || tabManagerCachedTab
-              ? owlCachedTab
-                ? owlCachedTab.lastAccessed
-                : tabManagerCachedTab.lastAccessed
-              : new Date().toISOString();
-
-          return {
-            id: tab.id,
-            url: tab.url,
-            lastAccessed: lastAccessed,
-          };
-        });
-
-        // Remove duplicate tabs by URL
-        const uniqueTabs = removeDuplicateTabs(currentTabs);
-
-        const tabsToClose = getTabsToClose(
-          uniqueTabs,
-          cachedOwlSession,
-          gapTime,
-          settings.watchMode,
-          settings.urls,
-          settings.excludeUrls
+    chrome.storage.local.get("owl_watch_session", (result) => {
+      const cachedOwlSession = result.owl_watch_session || { tabs: [] };
+      const currentTabs = tabs.map((tab) => {
+        const owlCachedTab = cachedOwlSession.tabs.find(
+          (cachedTab) => cachedTab.url === tab.url
         );
 
-        closeTabs(tabsToClose);
-
-        // Update both sessions with the current unique tabs and their last accessed times
-        const newOwlSession = {
-          tabs: uniqueTabs,
-          watchStarted: new Date().toISOString(),
-          nextWatch: addTimeToCurrentDate(gapTime),
+        const lastAccessed = owlCachedTab
+          ? owlCachedTab.lastAccessed
+          : new Date().toISOString();
+        return {
+          id: tab.id,
+          url: tab.url,
+          favIconUrl: tab.favIconUrl,
+          lastAccessed: lastAccessed,
         };
+      });
 
-        const newTabManagerSession = {
-          tabs: uniqueTabs.map((tab) => ({
-            id: tab.id,
-            url: tab.url,
-            lastAccessed: tab.lastAccessed,
-          })),
-          watchStarted: new Date().toISOString(),
-          nextWatch: addTimeToCurrentDate(gapTime),
-        };
+      // Remove duplicate tabs by URL
+      const uniqueTabs = removeDuplicateTabs(currentTabs);
 
-        chrome.storage.local.set({
-          owl_watch_session: newOwlSession,
-          tabManagerSession: newTabManagerSession,
-        });
-      }
-    );
+      const tabsToClose = getTabsToClose(
+        uniqueTabs,
+        cachedOwlSession,
+        gapTime,
+        settings.watchMode,
+        settings.urls,
+        settings.excludeUrls
+      );
+
+      closeTabs(tabsToClose);
+
+      // Update owl_watch_session with the current unique tabs and their last accessed times
+      const newOwlSession = {
+        tabs: uniqueTabs,
+        watchStarted: new Date().toISOString(),
+        nextWatch: addTimeToCurrentDate(gapTime),
+      };
+
+      chrome.storage.local.set({
+        owl_watch_session: newOwlSession,
+      });
+    });
   });
 };
 
@@ -156,7 +191,6 @@ const removeDuplicateTabs = (tabs) => {
       seenUrls.add(tab.url);
       uniqueTabs.push(tab);
     } else {
-      console.log("Removing duplicate tab:", tab.url);
       chrome.tabs.remove(tab.id);
     }
   });
@@ -167,48 +201,39 @@ const removeDuplicateTabs = (tabs) => {
 /**
  * Listen activation (new tabs) event to Update lastAccessed on cached data
  */
+
 chrome.tabs.onActivated.addListener((activeInfo) => {
   chrome.tabs.get(activeInfo.tabId, (tab) => {
+    if (isRestrictedUrl(tab.url)) {
+      return; // Exit if the URL is restricted
+    }
     if (tab && tab.url) {
-      chrome.storage.local.get(
-        ["owl_watch_session", "tabManagerSession"],
-        (result) => {
-          const tabManagerSession = result.tabManagerSession || { tabs: [] };
-          const owlWatchSession = result.owl_watch_session || { tabs: [] };
-          const currentTime = new Date().toISOString();
+      chrome.storage.local.get("owl_watch_session", (result) => {
+        const owlWatchSession = result.owl_watch_session || { tabs: [] };
 
-          // Update tabManagerSession
-          const tabManagerTab = tabManagerSession.tabs.find(
-            (t) => t.id === tab.id
-          );
-          if (tabManagerTab) {
-            tabManagerTab.lastAccessed = currentTime;
-          } else {
-            tabManagerSession.tabs.push({
-              id: tab.id,
-              url: tab.url,
-              lastAccessed: currentTime,
-            });
-          }
-          // Update owl_watch_session
-          const owlTab = owlWatchSession.tabs.find((t) => t.id === tab.id);
-          if (owlTab) {
-            owlTab.lastAccessed = currentTime;
-          } else {
-            owlWatchSession.tabs.push({
-              id: tab.id,
-              url: tab.url,
-              lastAccessed: currentTime,
-            });
-          }
+        if (!Array.isArray(owlWatchSession.tabs)) {
+          owlWatchSession.tabs = [];
+        }
 
-          // Save both sessions
-          chrome.storage.local.set({
-            owl_watch_session: owlWatchSession,
-            tabManagerSession: tabManagerSession,
+        const currentTime = new Date().toISOString();
+
+        // Update owl_watch_session
+        const owlTab = owlWatchSession.tabs.find((t) => t.id === tab.id);
+        if (owlTab) {
+          owlTab.lastAccessed = currentTime;
+        } else {
+          owlWatchSession.tabs.push({
+            id: tab.id,
+            url: tab.url,
+            favIconUrl: tab.favIconUrl,
+            lastAccessed: currentTime,
           });
         }
-      );
+
+        chrome.storage.local.set({
+          owl_watch_session: owlWatchSession,
+        });
+      });
     }
   });
 });
@@ -243,12 +268,10 @@ const getTabsToClose = (
 
     // If no cached tab is found, skip this tab
     if (!cachedTab) {
-      console.warn(`No cached tab found for URL: ${tab.url}`);
       return false;
     }
 
     if (tab.active) {
-      console.log(`Skipping active tab: ${tab.url}`);
       return false;
     }
 
@@ -295,7 +318,6 @@ const getTabsToClose = (
  */
 const closeTabs = (tabsToClose) => {
   tabsToClose.forEach((tab) => {
-    console.log("Closing tab:", tab.url);
     chrome.tabs.remove(tab.id);
   });
 };
@@ -325,15 +347,7 @@ const parseGapTimeToMinutes = (gapTime) => {
  * @returns {number} The gap time in milliseconds.
  */
 const parseGapTimeToMilliseconds = (gapTime) => {
-  const timeMultiplier = {
-    m: 60 * 1000,
-    h: 60 * 60 * 1000,
-    d: 24 * 60 * 60 * 1000,
-  };
-  const unit = gapTime.slice(-1);
-  const amount = parseInt(gapTime.slice(0, -1), 10);
-  const milliseconds = amount * timeMultiplier[unit];
-  return milliseconds;
+  return parseGapTimeToMinutes(gapTime) * 60 * 1000;
 };
 
 /**
@@ -349,141 +363,330 @@ const addTimeToCurrentDate = (gapTime) => {
 };
 
 /**
- * Listen for updated event(reload or reuse old tab) to update the cashed
- * session and tab data
+ * Listen for updated event (reload or reuse old tab) to update the cached
+ * session and tab data in owl_watch_session.
  */
 chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (isRestrictedUrl(tab.url)) {
+    console.warn("Access denied to restricted URL: 33333", tab.url);
+    return; // Exit if the URL is restricted
+  }
   if (
     changeInfo.status === "complete" &&
     tab.active &&
     tab.url !== "about:blank"
   ) {
-    console.log("Tab updated: ", tab);
 
-    // Get both sessions (tabManagerSession and owl_watch_session)
-    chrome.storage.local.get(
-      ["tabManagerSession", "owl_watch_session"],
-      (result) => {
-        const tabManagerSession = result.tabManagerSession || { tabs: [] };
-        const owlWatchSession = result.owl_watch_session || { tabs: [] };
-        const currentTime = new Date().toISOString();
+    // Get the owl_watch_session
+    chrome.storage.local.get("owl_watch_session", (result) => {
+      const owlWatchSession = result.owl_watch_session || { tabs: [] };
+      const currentTime = new Date().toISOString();
 
-        // Update tabManagerSession
-        const tabIndex = tabManagerSession.tabs.findIndex(
-          (t) => t.id === tabId
-        );
-        if (tabIndex !== -1) {
-          tabManagerSession.tabs[tabIndex].lastAccessed = currentTime;
-        } else {
-          tabManagerSession.tabs.push({
-            id: tabId,
-            url: tab.url,
-            lastAccessed: currentTime,
-          });
-        }
-
-        // Update owl_watch_session
-        const owlTabIndex = owlWatchSession.tabs.findIndex(
-          (t) => t.id === tabId
-        );
-        if (owlTabIndex !== -1) {
-          owlWatchSession.tabs[owlTabIndex].lastAccessed = currentTime;
-        } else {
-          owlWatchSession.tabs.push({
-            id: tabId,
-            url: tab.url,
-            lastAccessed: currentTime,
-          });
-        }
-
-        chrome.storage.local.set({
-          tabManagerSession: tabManagerSession,
-          owl_watch_session: owlWatchSession,
+      // Update owl_watch_session
+      const owlTabIndex = owlWatchSession.tabs.findIndex((t) => t.id === tabId);
+      if (owlTabIndex !== -1) {
+        // If the tab is found, update its lastAccessed
+        owlWatchSession.tabs[owlTabIndex].lastAccessed = currentTime;
+      } else {
+        // If the tab is not found, add it to the session
+        owlWatchSession.tabs.push({
+          id: tabId,
+          url: tab.url,
+          favIconUrl: tab.favIconUrl,
+          lastAccessed: currentTime,
         });
       }
-    );
+
+      // Save the updated owl_watch_session
+      chrome.storage.local.set({ owl_watch_session: owlWatchSession });
+    });
   }
 });
 
-/**
- * Listen for message event for Tab Manager
- */
-chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
-  if (request.message === "getTabs") {
-    // Get all current tabs, not just active ones
-    chrome.tabs.query({}, (tabs) => {
-      chrome.storage.local.get(["tabManagerSession"], (result) => {
-        const session = result.tabManagerSession || { tabs: [] };
 
-        // Enrich the tab data with last accessed time
-        const enrichedTabs = tabs.map((tab) => {
-          const cachedTab = session.tabs.find((t) => t.id === tab.id);
-          return {
-            ...tab,
-            lastAccessed: cachedTab ? cachedTab.lastAccessed : "Unknown",
-          };
-        });
+// Initialize lazy loading settings
+const initializeLazyLoadSettings = () => {
+  chrome.storage.local.get("owl_lazyload", (result) => {
+    if (typeof result.owl_lazyload === "undefined") {
+      chrome.storage.local.set({
+        owl_lazyload: { enabled: false, matchUrls: [], excludeUrls: [] },
+      });
+    }
+  });
+};
 
-        sendResponse(enrichedTabs);
-      });
-    });
-    return true;
-  } else if (request.message === "closeTab") {
-    // Close a specific tab by tabId
-    const { tabId } = request;
-    chrome.tabs.remove(tabId, () => {
-      console.log(`Tab ${tabId} closed`);
-      sendResponse({ status: "Tab closed" });
-    });
-    return true;
-  } else if (request.message === "closeNonActiveTabs") {
-    // Close all non-active tabs
-    chrome.tabs.query({}, (tabs) => {
-      const nonActiveTabs = tabs.filter((tab) => !tab.active);
-      nonActiveTabs.forEach((tab) => {
-        chrome.tabs.remove(tab.id, () => {
-          console.log(`Closed non-active tab: ${tab.url}`);
-        });
-      });
-      sendResponse({ status: "Non-active tabs closed" });
-    });
-    return true;
-  } else if (request.message === "closeAllTabs") {
-    // Close all open tabs
-    chrome.tabs.query({}, (tabs) => {
-      tabs.forEach((tab) => {
-        chrome.tabs.remove(tab.id, () => {
-          console.log(`Closed tab: ${tab.url}`);
-        });
-      });
-      sendResponse({ status: "All tabs closed" });
-    });
-    return true;
+// Function to inject lazy load script
+const injectLazyLoadingScripts = (tabId) => {
+  chrome.scripting.executeScript({
+    target: { tabId },
+    function: applyLazyLoading, // Function that implements lazy loading
+  });
+};
+
+const isRestrictedUrl = (url) => {
+  return url.startsWith("chrome://") || url.startsWith("about:");
+};
+
+// This function will be injected into the page to lazy load elements
+const applyLazyLoading = () => {
+  const images = document.querySelectorAll("img");
+  const iframes = document.querySelectorAll("iframe");
+
+  if ("loading" in HTMLImageElement.prototype) {
+    images.forEach((img) => (img.loading = "lazy"));
+    iframes.forEach((iframe) => (iframe.loading = "lazy"));
+    return; // Exit if native lazy loading is supported
   }
-});
 
-/**
- * BACKGROUND DEBUGERS
- */
+  // Add lazy loading attribute and IntersectionObserver logic
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          const lazyElement = entry.target;
+          if (lazyElement) {
+            if (lazyElement.dataset.src) {
+              lazyElement.src = lazyElement.dataset.src;
+              lazyElement.onerror = () => {
+                console.error(`Error loading ${lazyElement.dataset.src}`);
+                // Optional: add a fallback image or error handling
+              };
+              observer.unobserve(lazyElement);
+            }
+          }
+        }
+      });
+    },
+    {
+      root: null, // Use the viewport as the container
+      rootMargin: "0px",
+      threshold: 0.1, // Trigger when 10% of the element is visible
+    }
+  );
 
-chrome.runtime.onInstalled.addListener(() => {
-  console.log("Service worker started.");
+  images.forEach((img) => {
+    if (!img.dataset.src) {
+      img.dataset.src = img.src;
+      img.src = ""; // Remove the source to defer loading
+      img.loading = "lazy";
+      observer.observe(img);
+    }
+  });
 
-  // Test if chrome.alarms API is available
-  chrome.alarms.create("testAlarm", { delayInMinutes: 1 });
-  chrome.alarms.onAlarm.addListener((alarm) => {
-    if (alarm.name === "testAlarm") {
-      console.log("Test alarm triggered");
+  iframes.forEach((iframe) => {
+    if (!iframe.dataset.src) {
+      iframe.dataset.src = iframe.src;
+      iframe.src = ""; // Remove the source to defer loading
+      iframe.loading = "lazy";
+      observer.observe(iframe);
+    }
+  });
+};
+
+// Helper function to check if lazy loading should be applied to the tab
+const shouldLazyLoadTab = (tabUrl, lazyMode, matchUrls, excludeUrls) => {
+  if (lazyMode === "all") return true;
+  if (lazyMode === "urls") return matchUrls.includes(tabUrl);
+  if (lazyMode === "exclude") return !excludeUrls.includes(tabUrl);
+  return false;
+};
+
+// Inject lazy loading script when a tab is updated
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
+  if (isRestrictedUrl(tab.url)) {
+    console.warn("Access denied to restricted URL: ", tab.url);
+    return; // Exit if the URL is restricted
+  }
+
+  chrome.storage.local.get("owl_lazyload", (result) => {
+    const lazyLoadSettings = result.owl_lazyload || {
+      enabled: false,
+      settings: {},
+    };
+    const { enabled, settings } = lazyLoadSettings;
+    const { lazyMode, matchUrls = [], excludeUrls = [] } = settings || {};
+
+    if (enabled && changeInfo.status === "complete") {
+      if (shouldLazyLoadTab(tab.url, lazyMode, matchUrls, excludeUrls)) {
+        injectLazyLoadingScripts(tabId);
+      }
     }
   });
 });
 
-// Retrieve session
-chrome.storage.local.get(["owl_watch_session"], (result) => {
-  console.log("Retrieved session from storage:", result);
+// Inject lazy loading script for newly opened tabs
+chrome.tabs.onCreated.addListener((tab) => {
+  // Check if the URL is restricted
+  if (isRestrictedUrl(tab.url)) {
+    console.warn("Access denied to restricted URL: 00000", tab.url);
+    return; // Exit if the URL is restricted
+  }
+
+  chrome.storage.local.get("owl_lazyload", (result) => {
+    const lazyLoadSettings = result.owl_lazyload || {
+      enabled: false,
+      settings: {},
+    };
+    const { enabled, settings } = lazyLoadSettings;
+    const { lazyMode, matchUrls = [], excludeUrls = [] } = settings || {};
+
+    if (enabled) {
+      if (shouldLazyLoadTab(tab.url, lazyMode, matchUrls, excludeUrls)) {
+        injectLazyLoadingScripts(tab.id);
+      }
+    }
+  });
 });
 
-// Extension Installed
+// Initialize lazy load settings on extension installation
+chrome.runtime.onInstalled.addListener(initializeLazyLoadSettings);
+
+
+
+// Function to handle tab grouping or ungrouping when a tab is updated
+const handleTabGrouping = (tabId, changeInfo, tab) => {
+  if (autoGroupingEnabled && changeInfo.status === "complete" && tab.url) {
+    // Retrieve the stored session with groups and patterns
+    chrome.storage.local.get("owl_watch_session", (result) => {
+      const session = result.owl_watch_session || { groups: [] };
+      if (!Array.isArray(session.groups)) {
+        console.error("No groups found in the session:", session);
+        return; // Exit if groups are not defined or are not an array
+      }
+
+      let matchedGroup = null; // Track the matched group
+      let matchingPattern = null; // Track the matched pattern
+
+      // Loop through the session groups to find a matching pattern for the tab URL
+      for (let sessionGroup of session.groups) {
+        if (sessionGroup.patterns && sessionGroup.patterns.length > 0) {
+          matchingPattern = sessionGroup.patterns.find((pattern) =>
+            tab.url.includes(pattern)
+          );
+          if (matchingPattern) {
+            matchedGroup = sessionGroup;
+            break;
+          }
+        }
+      }
+
+      // Query existing Chrome tab groups
+      chrome.tabGroups.query({}, (groups) => {
+        if (matchedGroup) {
+          // If a matching group is found, check if it exists in Chrome
+          const existingGroup = groups.find(
+            (group) => group.id === matchedGroup.id
+          );
+
+          if (existingGroup) {
+            // Move the tab to the matched group
+            chrome.tabs.group(
+              { groupId: existingGroup.id, tabIds: [tabId] },
+              () => {
+                updateSessionGroup(tabId, matchedGroup.id);
+              }
+            );
+          } else {
+            // Create a new group if none exists
+            chrome.tabs.group({ tabIds: [tabId] }, (newGroupId) => {
+              matchedGroup.id = newGroupId;
+            
+              updateSessionGroup(tabId, newGroupId);
+            });
+          }
+        } else {
+          // Ungroup if no match is found for the tab
+          chrome.tabs.ungroup(tabId, () => {
+          
+            removeTabFromSessionGroup(tabId);
+          });
+        }
+      });
+    });
+  }
+};
+
+// Update session with group data for a specific tab
+const updateSessionGroup = (tabId, groupId) => {
+  chrome.storage.local.get("owl_watch_session", (result) => {
+    let session = result.owl_watch_session || { groups: [] };
+    let group = session.groups.find((g) => g.id === groupId);
+
+    if (group) {
+      // Ensure tabId is added to the group if not already present
+      if (!group.tabIds) group.tabIds = [];
+      if (!group.tabIds.includes(tabId)) group.tabIds.push(tabId);
+
+      // Update the session with the new group data
+      chrome.storage.local.set({ owl_watch_session: session }, () => {
+      });
+    }
+  });
+};
+
+// Remove a tab from its session group when ungrouped
+const removeTabFromSessionGroup = (tabId) => {
+  chrome.storage.local.get("owl_watch_session", (result) => {
+    let session = result.owl_watch_session || { groups: [] };
+
+    // Remove the tab from all groups it might be associated with
+    session.groups.forEach((group) => {
+      if (group.tabIds) {
+        group.tabIds = group.tabIds.filter((id) => id !== tabId);
+      }
+    });
+
+    // Update the session with the tab removed
+    chrome.storage.local.set({ owl_watch_session: session }, () => {
+      console.log(`Removed tab ID: ${tabId} from its group in session`);
+    });
+  });
+};
+
+
+
+const CreateOrUpdateGroupCache = () => {
+  // Query all existing tab groups
+  chrome.tabGroups.query({}, (groups) => {
+  
+    // Retrieve the session object from storage (or create a default one)
+    chrome.storage.local.get("owl_watch_session", (result) => {
+      let session = result.owl_watch_session || { groups: [] };
+
+      if (!Array.isArray(session.groups)) {
+        session.groups = [];
+      }
+
+      // Map Chrome groups while preserving existing groups and patterns in session
+      groups.forEach((chromeGroup) => {
+        // Find if the Chrome group already exists in the session
+        let existingGroup = session.groups.find((g) => g.id === chromeGroup.id);
+
+        if (!existingGroup) {
+          // If the group doesn't exist, add it with a new empty pattern array
+          session.groups.push({
+            id: chromeGroup.id,
+            name: chromeGroup.title || "Unnamed Group",
+            collapsed: chromeGroup.collapsed,
+            color: chromeGroup.color,
+            patterns: [], // Initialize new groups with an empty patterns array
+          });
+        }
+      });
+
+      // Save the updated session object back into chrome.storage.local
+      chrome.storage.local.set({ owl_watch_session: session }, () => {
+        if (session.autoGrouping) {
+          autoGroupingEnabled = true;
+          chrome.tabs.onUpdated.addListener(handleTabGrouping);
+        }
+      });
+    });
+  });
+};
+
+// Event listener to initialize session on extension install
 chrome.runtime.onInstalled.addListener(() => {
-  console.log("Owl Watch extension installed.");
+  CreateOrUpdateGroupCache();
 });
+

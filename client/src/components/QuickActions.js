@@ -4,7 +4,7 @@ import { useCommandStructure } from "../contexts/CommandStructureContext";
 import {
   Delete as DeleteIcon,
   Restore as RestoreIcon,
-  AddCircle,
+  SaveAlt,
   Cancel as CancelIcon,
 } from "@mui/icons-material";
 
@@ -45,8 +45,14 @@ const QuickActions = () => {
         <Button
           variant="contained"
           onClick={closeNonActiveTabs}
+          fullWidth
           startIcon={<CancelIcon />}
-          sx={{ marginBottom: "5px", justifyContent: "flex-start" }}
+          sx={{
+            marginBottom: "5px",
+            justifyContent: "flex-start",
+            padding: "10px",
+            paddingLeft: "20px",
+          }}
         >
           Close Non-Active Tabs
         </Button>
@@ -54,29 +60,44 @@ const QuickActions = () => {
         <Button
           variant="contained"
           onClick={closeAllTabs}
+          fullWidth
           startIcon={<CancelIcon />}
-          sx={{ marginBottom: "5px", justifyContent: "flex-start" }}
+          sx={{
+            marginBottom: "5px",
+            justifyContent: "flex-start",
+            padding: "10px",
+            paddingLeft: "20px",
+          }}
         >
           Close All Tabs
         </Button>
 
         <Button
           variant="contained"
+          fullWidth
           onClick={() => deleteSession(sessions[sessions.length - 1]._id)}
           startIcon={<DeleteIcon />}
-          sx={{ marginBottom: "5px", justifyContent: "flex-start" }}
+          sx={{
+            marginBottom: "5px",
+            justifyContent: "flex-start",
+            padding: "10px",
+            paddingLeft: "20px",
+          }}
         >
           delete last saved session
         </Button>
 
         <Button
           variant="contained"
-          onClick={() => {
-            console.log(sessions[sessions.length - 1]);
-            restoreSession(sessions[sessions.length - 1]);
-          }}
+          fullWidth
+          onClick={() => restoreSession(sessions[sessions.length - 1])}
           startIcon={<RestoreIcon />}
-          sx={{ marginBottom: "5px", justifyContent: "flex-start" }}
+          sx={{
+            marginBottom: "5px",
+            justifyContent: "flex-start",
+            padding: "10px",
+            paddingLeft: "20px",
+          }}
         >
           restore last saved session
         </Button>
@@ -84,8 +105,13 @@ const QuickActions = () => {
         <Button
           variant="contained"
           onClick={() => saveSession("Session by QuickAcess")}
-          startIcon={<AddCircle />}
-          sx={{ justifyContent: "flex-start" }}
+          startIcon={<SaveAlt />}
+          fullWidth
+          sx={{
+            justifyContent: "flex-start",
+            padding: "10px",
+            paddingLeft: "20px",
+          }}
         >
           save current session
         </Button>

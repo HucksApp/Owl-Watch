@@ -9,7 +9,6 @@ import {
   FormControlLabel,
   Radio,
   RadioGroup,
-  CssBaseline,
 } from "@mui/material";
 import VisibilityIcon from "@mui/icons-material/Visibility";
 import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
@@ -51,8 +50,8 @@ const Watch = () => {
         const { gapTime, watchMode, urls, excludeUrls } = result.watchSettings;
         setGapTime(gapTime);
         setWatchMode(watchMode);
-        setUrls(urls.join(", "));
-        setExcludeUrls(excludeUrls.join(", "));
+        setUrls(urls.join("\n "));
+        setExcludeUrls(excludeUrls.join("\n "));
       }
     });
   }, []);
@@ -63,40 +62,33 @@ const Watch = () => {
       gapTime,
       watchMode,
       urls:
-        watchMode === "urls" ? urls.split(",").map((url) => url.trim()) : [],
+        watchMode === "urls"
+          ? urls.split(/\s+/).map((url) => url.trim()).filter(Boolean)
+          : [],
       excludeUrls:
         watchMode === "exclude"
-          ? excludeUrls.split(",").map((url) => url.trim())
+          ? excludeUrls.split(/\s+/).map((url) => url.trim()).filter(Boolean)
           : [],
     };
 
     chrome.runtime.sendMessage(
       { action: "startWatch", settings },
       (response) => {
-        console.log(response.status);
         setIsWatching(true);
       }
     );
   };
 
-
   const handleStopWatch = () => {
     chrome.runtime.sendMessage({ action: "stopWatch" }, (response) => {
-      console.log(response.status);
       setIsWatching(false);
       chrome.storage.local.set({ watchActive: false });
     });
   };
 
-  const animationProps = {
-    initial: { opacity: 0, translateY: -20 },
-    animate: { opacity: 1, translateY: 0 },
-    exit: { opacity: 0, translateY: -20 },
-    transition: { duration: 0.3 },
-  };
 
   return (
-    <Container>
+    <Container sx={{marginBottom: "10px", paddingBottom: "30px" }}>
       <Typography variant="h5">Tab Watch Settings</Typography>
 
       {/* Gap Time Input */}
@@ -109,7 +101,7 @@ const Watch = () => {
       />
 
       {/* Watch Mode Selection */}
-      <FormControl component="fieldset" style={{ marginTop: "16px" }}>
+      <FormControl component="fieldset" style={{ marginTop: "16px", fontWeight:"bolder" }}>
         <Typography>Watch Mode:</Typography>
         <RadioGroup
           value={watchMode}
@@ -117,16 +109,19 @@ const Watch = () => {
         >
           <FormControlLabel
             value="all"
+            style={{ fontWeight: "bolder" }}
             control={<Radio />}
             label="Watch All Tabs"
           />
           <FormControlLabel
             value="urls"
+            style={{ fontWeight: "bolder" }}
             control={<Radio />}
             label="Watch Specific URLs"
           />
           <FormControlLabel
             value="exclude"
+            style={{ fontWeight: "bolder" }}
             control={<Radio />}
             label="Watch All Except Specific URLs"
           />
@@ -136,60 +131,59 @@ const Watch = () => {
       {/* Conditional URL Input Fields */}
       {watchMode === "urls" && (
         <TextField
-          label="Enter URLs to Watch (comma-separated)"
+          label="Enter URLs to Watch (space-separated)"
           value={urls}
           onChange={(e) => setUrls(e.target.value)}
           fullWidth
+          multiline
+          rows={4}
           margin="normal"
         />
       )}
       {watchMode === "exclude" && (
         <TextField
-          label="Enter URLs to Exclude (comma-separated)"
+          label="Enter URLs to Exclude (space-separated)"
           value={excludeUrls}
           onChange={(e) => setExcludeUrls(e.target.value)}
           fullWidth
+          multiline
+          rows={4}
           margin="normal"
         />
       )}
 
       {/* Current Settings Display with Animation */}
       {isWatching && (
-        <>
-          <motion.div
-            key="watch-settings"
-            {...animationProps}
-          >
-            <Container
-              style={{
-                marginTop: "20px",
-                padding: "10px",
-                border: "1px solid #ccc",
-                borderRadius: "8px",
-                backgroundColor: "rgba(241, 241, 241, 0.7)",
-                overflow: "scroll",
-              }}
-            >
-              <Typography variant="h6">Current Settings</Typography>
-              <Typography variant="body1">
-                <strong>Watch Mode:</strong> {watchMode}
-              </Typography>
-              <Typography variant="body1">
-                <strong>Gap Time:</strong> {gapTime}
-              </Typography>
-              {watchMode === "urls" && (
-                <Typography variant="body1">
-                  <strong>URLs to Watch:</strong> {urls}
-                </Typography>
-              )}
-              {watchMode === "exclude" && (
-                <Typography variant="body1">
-                  <strong>URLs to Exclude:</strong> {excludeUrls}
-                </Typography>
-              )}
-            </Container>
-          </motion.div>
-        </>
+        <Container
+          style={{
+            marginTop: "20px",
+            padding: "10px",
+            border: "1px solid #ccc",
+            borderRadius: "8px",
+            backgroundColor: "rgba(241, 241, 241, 0.7)",
+            overflow: "scroll",
+          }}
+        >
+          <Typography variant="h6">Current Settings</Typography>
+          <Typography variant="body1">
+            <strong>Watch Mode:</strong> {watchMode}
+          </Typography>
+          <Typography variant="body1">
+            <strong>Gap Time:</strong> {gapTime}
+          </Typography>
+          {watchMode === "urls" && (
+            <Typography variant="body1">
+              <strong>URLs to Watch:</strong> 
+              <div style={{ whiteSpace: "pre-line" }}>{urls}</div> 
+            </Typography>
+          )}
+          {watchMode === "exclude" && (
+            <Typography variant="body1">
+              <strong>URLs to Exclude:</strong> 
+              <div style={{ whiteSpace: "pre-line" }}>{excludeUrls}</div>
+            </Typography>
+          )}
+        </Container>
       )}
 
       {/* Watch Button */}

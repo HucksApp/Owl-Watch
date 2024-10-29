@@ -1,0 +1,24 @@
+[
+    {
+        "id": 1,
+        "priority": 1,
+        "action": {
+            "type": "allow"
+        },
+        "condition": {
+            "urlFilter": "*",
+            "resourceTypes": ["main_frame", "script", "image", "xmlhttprequest"] 
+        }
+    },
+    {
+        "id": 2,
+        "priority": 2,
+        "action": {
+            "type": "allow"
+        },
+        "condition": {
+            "urlFilter": "*",
+            "resourceTypes": ["main_frame", "script", "image", "xmlhttprequest"]
+        }
+    }
+]

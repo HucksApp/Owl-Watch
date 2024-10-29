@@ -1,6 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import MenuIcon from "@mui/icons-material/Menu";
 import { Fab, Slide } from "@mui/material";
+import Draggable from "react-draggable";
 
 /**
  * Floating Component
@@ -22,16 +23,38 @@ import { Fab, Slide } from "@mui/material";
  */
 
 const Floating = ({ toggleAppBar, showAppBar }) => {
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDrag = () => {
+    setIsDragging(true);
+  };
+
+  const handleStop = () => {
+    // Timeout to reset isDragging after drag has completed
+    setTimeout(() => setIsDragging(false), 0);
+  };
+
+  const handleClick = () => {
+    if (!isDragging) {
+      toggleAppBar();
+    }
+  };
+
   return (
-    <Slide direction="left" in={!showAppBar} mountOnEnter unmountOnExit>
-      <Fab
-        aria-label="menu"
-        size="small"
-        onClick={toggleAppBar}
-        style={{ position: "fixed", bottom: 20, right: 20 }} // Floating position
-      >
-        <MenuIcon sx={{ fontWeight: "1000" }} />
-      </Fab>
+    <Slide direction="right" in={!showAppBar} mountOnEnter unmountOnExit>
+      <div style={{ position: "fixed", top: 20, left: 20 }}>
+        {" "}
+        <Draggable onDrag={handleDrag} onStop={handleStop}>
+          <Fab
+            aria-label="menu"
+            size="small"
+            onClick={handleClick}
+            style={{ cursor: "grab" }}
+          >
+            <MenuIcon sx={{ fontWeight: "1000" }} />
+          </Fab>
+        </Draggable>
+      </div>
     </Slide>
   );
 };

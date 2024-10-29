@@ -5,7 +5,7 @@ import { AuthContext } from "../contexts/AuthContext";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import GoogleIcon from "@mui/icons-material/Google";
-
+import { getFromLocalStorage } from "../services/localStorage";
 /**
  * Login Component
  *
@@ -51,8 +51,17 @@ const Login = ({ toggleTheme, isDarkMode }) => {
   const navigate = useNavigate();
 
   useEffect(() => {
+    const handleUserView = async () => {
+      const viewPath = await getFromLocalStorage("currentView");
+      if (viewPath) {
+        navigate(viewPath);
+      } else {
+        navigate("/dashboard/tabs");
+      }
+    };
+
     if (user) {
-      navigate("/dashboard/watcher");
+       handleUserView();
     }
   }, [user]);
 

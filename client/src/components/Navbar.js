@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   AppBar,
   Toolbar,
@@ -14,13 +14,15 @@ import ContrastIcon from "@mui/icons-material/Contrast";
 import CookieIcon from "@mui/icons-material/Cookie";
 import TabIcon from "@mui/icons-material/Tab";
 import LowPriorityIcon from "@mui/icons-material/LowPriority";
-import PsychologyIcon from "@mui/icons-material/Psychology";
-import { useNavigate } from "react-router-dom";
-import MonitorHeartIcon from "@mui/icons-material/MonitorHeart";
+import ShutterSpeedIcon from "@mui/icons-material/ShutterSpeed";
+import { useNavigate, useLocation } from "react-router-dom";
 import VoiceCommand from "./VoiceCommand";
+import AutoAwesomeMotionIcon from "@mui/icons-material/AutoAwesomeMotion";
+import LazyLoaderNav from "./LazyLoaderNav";
 import { motion } from "framer-motion";
 import logoImage from "../assets/logo.png";
 import "../styles/Nav.css";
+import { saveToLocalStorage } from "../services/localStorage";
 
 /**
  * Navbar Component
@@ -57,6 +59,11 @@ const Navbar = ({
   toggleAppBar,
 }) => {
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    saveToLocalStorage("currentView", location.pathname);
+  }, [location]);
 
   return (
     <motion.div
@@ -103,7 +110,19 @@ const Navbar = ({
                   color="inherit"
                   onClick={() => navigate("/dashboard/watcher")}
                 >
-                  <MonitorHeartIcon sx={{ fontWeight: "1000" }} />
+                  <ShutterSpeedIcon sx={{ fontWeight: "1000" }} />
+                </IconButton>
+              </Tooltip>
+
+              <Tooltip
+                title="Tab Groups"
+                sx={{ marginRight: 1, marginLeft: 1 }}
+              >
+                <IconButton
+                  color="inherit"
+                  onClick={() => navigate("/dashboard/Tabgroups")}
+                >
+                  <AutoAwesomeMotionIcon sx={{ fontWeight: "1000" }} />
                 </IconButton>
               </Tooltip>
 
@@ -142,18 +161,7 @@ const Navbar = ({
                   <LowPriorityIcon sx={{ fontWeight: "1000" }} />
                 </IconButton>
               </Tooltip>
-
-              <Tooltip
-                title="Tab Suggestions"
-                sx={{ marginRight: 1, marginLeft: 1 }}
-              >
-                <IconButton
-                  color="inherit"
-                  onClick={() => navigate("/dashboard/AI_suggest")}
-                >
-                  <PsychologyIcon sx={{ fontWeight: "1000" }} />
-                </IconButton>
-              </Tooltip>
+              <LazyLoaderNav />
               <VoiceCommand />
               <Tooltip title="Theme" sx={{ marginRight: 1, marginLeft: 1 }}>
                 <IconButton color="inherit" onClick={toggleTheme}>

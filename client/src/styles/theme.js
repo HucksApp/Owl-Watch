@@ -15,35 +15,37 @@ const lightTheme = createTheme({
   palette: {
     mode: "light",
     primary: {
-      main: "#1976d2",
+      main: "#212529",     //"#1976d2",
     },
     secondary: {
-      main: "#f50057",
+      main: "#495057"//"#F8F9FA ",
     },
     background: {
-      default: "#f4f6f8",
-      paper: "#ffffff",
+      default:  "6C757D",//"#E9ECEF ",
+      paper: "#f4f6f8",
     },
     text: {
-      primary: "#333333",
-      secondary: "#666666",
+      primary:  "#212529", //"#333333",
+      secondary: "#495057",//"#666666",
+      fontWeight:"bolder"
     },
   },
   typography: {
     fontFamily: "'Roboto', 'Helvetica', 'Arial', sans-serif",
+    fontWeight:1000,
     h1: {
       fontSize: "2.5rem",
-      backgroundColor: "#f1f1f1",
+      backgroundColor: "#6C757D"//"#f1f1f1",
     },
     h2: {
       fontSize: "2rem",
-      backgroundColor: "#f1f1f1",
+      backgroundColor: "#6C757D" //"#f1f1f1",
     },
     h4: {
-      color: "#775c2c",
+      color:  "#6C757D"//"#775c2c",
     },
     h5: {
-      color: "#1976d2",
+      color:  "#6C757D"//"#1976d2",
     },
     body1: {
       fontSize: "1rem",
@@ -54,14 +56,14 @@ const lightTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "0.2s",
-          backgroundColor: "#7209b7",
-          color: "#f1f1f1",
+          backgroundColor: "#007BFF",//"#7209b7",
+          color:  "#212529",//"#f1f1f1",
           border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
-            backgroundColor: "#262525",
-            color: "#f1f1f1",
+            backgroundColor: "#6610F2",//"#262525",
+            color: "#212529",//"#f1f1f1",
             opacity: "0.6",
           },
         },
@@ -71,14 +73,14 @@ const lightTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "0.2s",
-          backgroundColor: "#7209b7",
-          color: "#f1f1f1",
+          backgroundColor:  "#007BFF",//"#7209b7",
+          color:  "#212529",//"#f1f1f1",
           border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
-            backgroundColor: "#262525",
-            color: "#f1f1f1",
+            backgroundColor: "#6610F2", //"#262525",
+            color:  "#212529",//"#f1f1f1",
             opacity: "0.6",
           },
         },
@@ -87,26 +89,36 @@ const lightTheme = createTheme({
     MuiListItem: {
       styleOverrides: {
         root: {
-          backgroundColor: "rgba(241, 241, 241, 0.7)",
+          backgroundColor: "rgba(242,242,242, 0.7)",
           fontWeight: "1000",
+          boxSizing: "border-box",
+          // width: "100%",
+          // outline:"blue solid 10px",
         },
       },
     },
     MuiListItemText: {
       styleOverrides: {
         root: {
-          fontSize: "14px",
+          display: "flex",
+          justifyContent:"center",
+          alignItems:"flex-start",
+          flexDirection:"column",
+          // fontSize: "14px",
+          overflow:"auto",
           fontWeight: "1000",
-          flexWrap: "wrap",
-          overflow: "hidden",
+          // flexWrap: "wrap",
+          // overflow: "hidden",
+          // boxSizing: "border-box",
+           width: "inherit"
         },
         primary: {
-          fontSize: "16px",
+          fontSize: "14px",
           fontWeight: "bolder",
         },
         secondary: {
           fontSize: "8px",
-          color: "#775c2c",
+          color: "#495057",
           fontWeight: "bold",
         },
       },
@@ -114,15 +126,23 @@ const lightTheme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
-          backgroundColor: "rgba(241, 241, 241, 0.7)",
+          backgroundColor: "rgba(242,242,242, 0.7)",
           fontWeight: "1000",
         },
       },
     },
-    MuiFormControl: {
+    MuiSelect: {
       styleOverrides: {
         root: {
-          backgroundColor: "rgba(241, 241, 241, 0.7)",
+          backgroundColor: "rgba(242,242,242, 0.7)",
+          fontWeight: "1000",
+        },
+      },
+    },
+    MuiFormGroup: {
+      styleOverrides: {
+        root: {
+          backgroundColor: "rgba(242,242,242, 0.7)",
         },
       },
     },
@@ -147,6 +167,7 @@ const lightTheme = createTheme({
     MuiCssBaseline: {
       styleOverrides: {
         body: {
+          backgroundColor:"#F8F9FA",
           backgroundImage: `url(${backgroundImage})`,
           backgroundSize: "contain",
           backgroundPosition: "center",
@@ -184,18 +205,18 @@ const darkTheme = createTheme({
   palette: {
     mode: "dark",
     primary: {
-      main: "#90caf9",
+      main: "#121212",//"#90caf9",
     },
     secondary: {
-      main: "#f48fb1",
+      main:   "#1E1E1E"//"#f48fb1",
     },
     background: {
-      default: "#121212",
+      default: "#2C2C2C",//"#121212",
       paper: "#1e1e1e",
     },
     text: {
-      primary: "#ffffff",
-      secondary: "#bbbbbb",
+      primary:   "#B3B3B3",//"#ffffff",
+      secondary:  "#8A8A8A" //"#bbbbbb",
     },
   },
   typography: {
@@ -218,14 +239,14 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "0.2s",
-          backgroundColor: "#7209b7",
-          color: "#f1f1f1",
+          backgroundColor: "#61AFFF",//"#7209b7",
+          color: "#E1E1E1",
           border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
-            backgroundColor: "#f1f1f1",
-            color: "#262525",
+            backgroundColor: "#9B7EFA",
+            color:  "#FFD369",//"#262525",
             opacity: "0.6",
           },
         },
@@ -235,14 +256,14 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "0.2s",
-          backgroundColor: "#7209b7",
-          color: "#f1f1f1",
+          backgroundColor: "#61AFFF",//"#7209b7",
+          color:  "#E1E1E1",//"#f1f1f1",
           border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
             backgroundColor: "#f1f1f1",
-            color: "#262525",
+            color:  "#FFD369",//"#262525",
             opacity: "0.6",
           },
         },
@@ -267,10 +288,11 @@ const darkTheme = createTheme({
         primary: {
           fontSize: "16px",
           fontWeight: "bolder",
+          color: "#E1E1E1",
         },
         secondary: {
           fontSize: "8px",
-          color: "#1976d2",
+          color: "#B3B3B3",//"#1976d2",
           fontWeight: "bold",
         },
       },
@@ -329,12 +351,12 @@ const pageVariants = {
   initial: {
     opacity: 0,
     x: 20,
-    scale: 0.7,
+    //scale: 0.9,
   },
   animate: {
     opacity: 1,
     x: 0,
-    scale: 1,
+    //scale: 1,
     transition: {
       duration: 0.6,
       ease: "easeInOut",
@@ -343,7 +365,7 @@ const pageVariants = {
   exit: {
     opacity: 0,
     y: 20,
-    scale: 0.9,
+    //scale: 0.9,
     transition: {
       duration: 0.2,
       ease: "easeInOut",

@@ -27,7 +27,6 @@ const VoiceCommand = () => {
   const { listening, startListening, stopListening } = useVoiceCommand();
 
   const handleButtonClick = () => {
-    console.log("Button clicked");
     if (listening) stopListening();
     else startListening();
   };

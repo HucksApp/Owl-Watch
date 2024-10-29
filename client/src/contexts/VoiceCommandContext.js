@@ -75,7 +75,6 @@ export const VoiceCommandProvider = ({ children }) => {
 
       newRecognition.onresult = (event) => {
         const command = event.results[0][0].transcript.toLowerCase();
-        console.log("Voice Command Received:", command);
 
         // Execute commands based on recognized speech
         if (command.includes("close non-active tabs")) {
@@ -136,10 +135,8 @@ export const VoiceCommandProvider = ({ children }) => {
   useEffect(() => {
     if (recognition) {
       if (listening) {
-        console.log("Recognition is starting...");
         startRecognition(recognition); // Start only when listening is true
       } else {
-        console.log("Recognition stopped.");
         recognition.stop();
       }
     }

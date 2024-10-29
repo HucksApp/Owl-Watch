@@ -1,0 +1,16 @@
+.animated-container {
+    opacity: 0;
+    transform: translateY(-20px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    /* Add padding or margins to maintain layout */
+    margin-top: 20px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background-color: rgba(241, 241, 241, 0.7);
+  }
+  
+  .animated-container.show {
+    opacity: 1;
+    transform: translateY(0);
+  }

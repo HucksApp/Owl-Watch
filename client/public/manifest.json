@@ -6,12 +6,27 @@
   "permissions": [
     "identity",
     "tabs",
+    "tabGroups",
     "storage",
     "alarms",
     "activeTab",
     "scripting",
-    "windows"
+    "windows",
+    "webRequest",
+    "processes",
+   "declarativeNetRequest",
+    "declarativeNetRequestFeedback",
+     "system.memory"
   ],
+  "declarative_net_request": {
+    "rule_resources": [
+      {
+        "id": "ruleset_1",
+        "enabled": true,
+        "path": "rules.json"
+      }
+    ]
+  },
   "background": {
     "service_worker": "background.js"
   },

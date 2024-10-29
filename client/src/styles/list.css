@@ -1,0 +1,30 @@
+.listcontentContainer{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    box-sizing: border-box;
+    width: inherit;
+    padding: 0.5% ;
+    overflow: auto;
+}
+
+.listcontentInfo{
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    box-sizing: border-box;
+    border: "solid green";
+}
+
+
+.listcontentButtons{
+    align-self: flex-start;
+    width: inherit;
+    display: flex;
+    /* outline: #4CAF50 solid 10px; */
+    flex-direction: row;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 0px 5px;
+}

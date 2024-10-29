@@ -20,7 +20,7 @@ export const saveToLocalStorage = (key, value) => {
     expiry: Date.now() + EXPIRATION_DURATION,
   };
   chrome.storage.local.set({ [key]: data }, () => {
-    console.log(`Data saved for key: ${key}`);
+    console.log(`Data saved for key: ${key} for ${data}`);
   });
 };
 /**

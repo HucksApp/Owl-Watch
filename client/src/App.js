@@ -6,7 +6,9 @@ import Dashboard from "./pages/Dashboard";
 import TabManager from "./components/TabManager";
 import SessionManager from "./components/SessionManager";
 import QuickActions from "./components/QuickActions";
-import TabSuggestions from "./components/TabSuggestions";
+import TabGroups from "./components/TabGroups.js";
+import LazyLoader from "./components/LazyLoader.js";
+// import TabMetrics from "./components/TabMetrics.js";
 import Login from "./pages/Login";
 import Watch from "./components/Watcher.js";
 import { CssBaseline } from "@mui/material";
@@ -110,10 +112,12 @@ const App = () => {
                     <Route path="save" element={<SessionManager />} />
 
                     <Route path="tabs" element={<TabManager />} />
+                    <Route path="lazyloader" element={<LazyLoader />} />
 
                     <Route path="quick_actions" element={<QuickActions />} />
-
-                    <Route path="AI_suggest" element={<TabSuggestions />} />
+{/* 
+                    <Route path="metrics" element={<TabMetrics />} /> */}
+                    <Route path="Tabgroups" element={<TabGroups />} />
                   </Route>
                 </Routes>
               </AnimatePresence>

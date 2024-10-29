@@ -13,6 +13,7 @@ const TabSchema = new mongoose.Schema({
   url: String,
   title: String,
   active: Boolean,
+  favIconUrl: String,
   lastAccessed: Date,
 });
 
@@ -29,7 +30,7 @@ const TabSchema = new mongoose.Schema({
 
 const SessionSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
-  name: { type: String, required: true }, // Added the 'name' field here
+  name: { type: String, required: true },
   tabs: [TabSchema],
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date },

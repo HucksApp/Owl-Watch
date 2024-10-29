@@ -61,7 +61,6 @@ export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
   const BASE_URL = process.env.REACT_APP_API_BASE_URL;
   const redirectUri = `${process.env.REACT_APP_API_BASE_URL}/api/auth/google/callback`;
-  console.log(BASE_URL);
 
   useEffect(() => {
     // Check if the user is already logged in
@@ -72,7 +71,7 @@ export const AuthProvider = ({ children }) => {
         });
         setUser(response.data);
       } catch (err) {
-        console.log(err);
+        console.error(err);
       }
     };
 
@@ -85,8 +84,6 @@ export const AuthProvider = ({ children }) => {
 
   const handleAuthResponse = async (token) => {
     if (token) {
-      console.log("Extracted ID Token:", token);
-
       try {
         const response = await axios.post(`${BASE_URL}/api/auth/google`, {
           token,
@@ -101,7 +98,6 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  // Update the part where you open the auth window and check for the response
   const login = async () => {
     const nonce = [...Array(30)]
       .map(() => Math.floor(Math.random() * 36).toString(36))
@@ -110,29 +106,23 @@ export const AuthProvider = ({ children }) => {
     const authURL = `${googleAuthURL}?client_id=${clientId}&response_type=id_token&redirect_uri=${encodeURIComponent(
       redirectUri
     )}&scope=${authScope}&nonce=${nonce}`;
-    console.log(`auth url ===> ${authURL}`, `redirect ===>${redirectUri}`);
 
     const authWindow = window.open(
       authURL,
       "authWindow",
       "width=600,height=600"
     );
-    console.log("====> In login, auth window opened");
 
     // Add an event listener to listen for messages from the OAuth window
     window.addEventListener("message", (event) => {
-      console.log("Received message:", event);
-
       // Check the origin of the message
       if (event.origin !== BASE_URL) {
         console.error("Untrusted origin:", event.origin);
         return;
       }
-      console.log("====> Message received from trusted origin");
 
       if (event.data && event.data.type === "auth_response") {
         const token = event.data.token;
-        console.log(token, "====> token");
         handleAuthResponse(token);
 
         // Close the auth window
@@ -166,5 +156,3 @@ export const AuthProvider = ({ children }) => {
     </AuthContext.Provider>
   );
 };
-
-//   https://paejibbeefdfbfccdhbloigdghcjnckg.chromiumapp.org/
