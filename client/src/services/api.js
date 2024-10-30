@@ -10,9 +10,14 @@
 
 import axios from 'axios';
 
+const BASE_URL =
+    process.env.REACT_APP_STAGE === "production"
+      ? process.env.REACT_APP_API_BASE_URL_PROD
+      : process.env.REACT_APP_API_BASE_URL_DEV;
+
 // Create an Axios instance
 const axiosInstance = axios.create({
-    baseURL: process.env.REACT_APP_API_BASE_URL,
+    baseURL: BASE_URL,
     withCredentials: true,     
     timeout: 20000,
     headers: {
