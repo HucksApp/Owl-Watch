@@ -95,7 +95,7 @@ app.use("/api/user", userRoutes);
 
 // Connect to MongoDB
 //console.log(config.get("mongoURI"));
-const URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.h3bmy.mongodb.net/?retryWrites=true&w=majority&tls=true&appName=Cluster0`
+const URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.h3bmy.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&tls=true&appName=Cluster0`
 mongoose
   .connect(URI, {
     useNewUrlParser: true,
