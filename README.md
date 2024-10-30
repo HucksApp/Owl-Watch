@@ -53,3 +53,12 @@ $ git clone https://github.com/HucksApp/Owl-Watch   # Clone repo
 # navigate to UI or API 
 $ npm install    
 ```
+
+## Bugs 🐛 🪲
+No known bugs at this time. 
+
+## Authors 🖌
+Aremu Mohammad Abiodun ~ [Github](https://github.com/Hucksapp) : [Twitter](https://twitter.com/hucks_jake)  
+
+## License ©
+Public Domain. No copy write protection. 
