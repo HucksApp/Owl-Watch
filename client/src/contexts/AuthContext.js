@@ -66,16 +66,25 @@ export const AuthProvider = ({ children }) => {
     // Check if the user is already logged in
     const fetchUser = async () => {
       try {
-        const response = await axios.get(`${BASE_URL}/api/user`, {
-          withCredentials: true,
-        });
-        setUser(response.data);
-      } catch (err) {
-        console.error(err);
-      }
+     const owl_user = await getFromLocalStorage("OWL_WATCH_USER")
+
+     if (owl_user){
+      setUser(owl_user);
+     }else{
+
+      const response = await axios.get(`${BASE_URL}/api/user`, {
+        withCredentials: true,
+      });
+      saveToLocalStorage("OWL_WATCH_USER",response.data);
+      setUser(response.data);
+     }
+    } catch (err) {
+      console.error(err);
+    }
+
     };
 
-    getFromLocalStorage("token").then((token) => {
+    getFromLocalStorage("OWL_WATCH_TOKEN").then((token) => {
       if (token) {
         fetchUser();
       }
@@ -89,7 +98,7 @@ export const AuthProvider = ({ children }) => {
           token,
         });
         setToken(response.data);
-        saveToLocalStorage("token", response.data);
+        saveToLocalStorage("OWL_WATCH_TOKEN", response.data);
       } catch (error) {
         console.error("Error sending token to backend:", error);
       }
@@ -142,8 +151,9 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     await axios.get(`${BASE_URL}/api/auth/logout`);
-    removeFromLocalStorage("token");
+    removeFromLocalStorage("OWL_WATCH_TOKEN");
     removeFromLocalStorage("owl_watch_session");
+    removeFromLocalStorage("OWL_WATCH_USER");
     removeFromLocalStorage("theme");
     clearLocalStorage();
     setUser(null);
