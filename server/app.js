@@ -6,6 +6,7 @@ import cors from "cors";
 import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from "url";
+import MongoStore from 'connect-mongo';
 // Environment Config
 //import config from "config";
 import passport from "./auth/passport.js";
@@ -16,6 +17,8 @@ import userRoutes from "./routes/userRoutes.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+const URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.h3bmy.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&tls=true&appName=Cluster0`
+
 
 // Initialize Express
 const app = express();
@@ -70,10 +73,14 @@ app.use(
     secret: process.env.GOOGLE_CLIENT_SECRET,
     resave: false,
     saveUninitialized: false,
+    store: MongoStore.create({
+      mongoUrl: URI,
+      collectionName: 'sessions-store',
+    }),
     cookie: {
-      secure: false,
-      maxAge: 1000 * 60 * 60 * 24 * 2, // Session expiration time 2days
-      sameSite: "lax",
+      secure: false, // Set to true if using HTTPS
+      maxAge: 1000 * 60 * 60 * 24 * 2, // 2 days
+      sameSite: 'lax',
     },
   })
 );
@@ -95,7 +102,6 @@ app.use("/api/user", userRoutes);
 
 // Connect to MongoDB
 //console.log(config.get("mongoURI"));
-const URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.h3bmy.mongodb.net/${process.env.DB_NAME}?retryWrites=true&w=majority&tls=true&appName=Cluster0`
 mongoose
   .connect(URI, {
     useNewUrlParser: true,

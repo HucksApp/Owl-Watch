@@ -108,6 +108,13 @@ export const logout = (req, res) => {
       console.error("Logout error:", err);
       return res.status(500).send("Could not log out");
     }
-    res.status(200).json({ message: "logout" });
+    req.session.destroy((sessionErr) => {
+      if (sessionErr) {
+        console.error("Session destroy error:", sessionErr);
+        return res.status(500).send("Could not destroy session");
+      }
+
+      res.status(200).json({ message: "Logout successful" });
+    });
   });
 };
