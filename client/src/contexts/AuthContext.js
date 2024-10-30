@@ -59,29 +59,30 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const navigate = useNavigate();
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
-  const redirectUri = `${process.env.REACT_APP_API_BASE_URL}/api/auth/google/callback`;
-
+  const BASE_URL =
+    process.env.REACT_APP_STAGE === "production"
+      ? process.env.REACT_APP_API_BASE_URL_PROD
+      : process.env.REACT_APP_API_BASE_URL_DEV;
+  const redirectUri = `${BASE_URL}/api/auth/google/callback`;
+  console.log("redirect url====>",    redirectUri)
   useEffect(() => {
     // Check if the user is already logged in
     const fetchUser = async () => {
       try {
-     const owl_user = await getFromLocalStorage("OWL_WATCH_USER")
+        const owl_user = await getFromLocalStorage("OWL_WATCH_USER");
 
-     if (owl_user){
-      setUser(owl_user);
-     }else{
-
-      const response = await axios.get(`${BASE_URL}/api/user`, {
-        withCredentials: true,
-      });
-      saveToLocalStorage("OWL_WATCH_USER",response.data);
-      setUser(response.data);
-     }
-    } catch (err) {
-      console.error(err);
-    }
-
+        if (owl_user) {
+          setUser(owl_user);
+        } else {
+          const response = await axios.get(`${BASE_URL}/api/user`, {
+            withCredentials: true,
+          });
+          saveToLocalStorage("OWL_WATCH_USER", response.data);
+          setUser(response.data);
+        }
+      } catch (err) {
+        console.error(err);
+      }
     };
 
     getFromLocalStorage("OWL_WATCH_TOKEN").then((token) => {
