@@ -26,8 +26,8 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     chrome.alarms.clear("watchAlarm");
     chrome.storage.local.set({ watchActive: false });
     sendResponse({ status: "watch_stopped" });
-  }else   if (message.type === "Toggle_Auto_Grouping") {
-    autoGroupingEnabled = message.enabled; // Toggle autoGroupingEnabled based on message
+  }else if (request.type === "Toggle_Auto_Grouping") {
+    autoGroupingEnabled = request.enabled; // Toggle autoGroupingEnabled based on message
 
     if (autoGroupingEnabled) {
       // Add the tab update listener when enabled
