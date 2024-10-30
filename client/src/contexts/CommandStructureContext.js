@@ -59,7 +59,10 @@ export const CommandStructureProvider = ({ children }) => {
   const [tabs, setTabs] = useState([]);
   const [highlightedTabs, setHighlightedTabs] = useState([]);
   const [sessions, setSessions] = useState([]);
-  const BASE_URL = process.env.REACT_APP_API_BASE_URL;
+  const BASE_URL =
+    process.env.REACT_APP_STAGE === "production"
+      ? process.env.REACT_APP_API_BASE_URL_PROD
+      : process.env.REACT_APP_API_BASE_URL_DEV;
 
  
 
