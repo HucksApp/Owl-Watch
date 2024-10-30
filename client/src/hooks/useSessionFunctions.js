@@ -23,7 +23,7 @@ const saveSession = async (sessionName) => {
           name: sessionName,
           tabs: formattedTabs,
         });
-  
+            console.log("Hereeeeee")
         // Update the sessions state with the newly saved session
         setSessions((prevSessions) => {
           const newSession = {
