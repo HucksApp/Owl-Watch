@@ -15,7 +15,7 @@ dotenv.config();
 
 const BASE_URL =
   process.env.STAGE === "production"
-    ? process.env.BASE_URL_DEV
+    ? process.env.BASE_URL_PROD
     : process.env.BASE_URL_DEV;
 
 passport.use(
