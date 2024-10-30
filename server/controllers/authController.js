@@ -1,4 +1,3 @@
-import config from "config";
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/userModel.js";
 import path from "path";
@@ -47,7 +46,7 @@ export const googleCallback = (req, res) => {
  * @returns {void} Responds with a success message and token or an error message.
  */
 export const googleLogin = async (req, res) => {
-  const client = new OAuth2Client(config.get("GOOGLE_CLIENT_ID"));
+  const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const { token } = req.body;
   console.log(token);
 
@@ -59,7 +58,7 @@ export const googleLogin = async (req, res) => {
     // Verify the ID token
     const ticket = await client.verifyIdToken({
       idToken: token,
-      audience: config.get("GOOGLE_CLIENT_ID"),
+      audience: process.env.GOOGLE_CLIENT_ID,
     });
 
     const payload = ticket.getPayload();
@@ -79,7 +78,7 @@ export const googleLogin = async (req, res) => {
     req.logIn(user, (err) => {
       if (err) {
         console.error("Error logging in user:", err);
-        return res.redirect(`${config.get("Client_Base_Url")}/login`); // Redirect to login on error
+        return res.redirect(`${process.env.Client_Base_Url}/login`); // Redirect to login on error
       }
 
       res.status(200).json({ token });

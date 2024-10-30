@@ -7,7 +7,7 @@ import bodyParser from "body-parser";
 import path from "path";
 import { fileURLToPath } from "url";
 // Environment Config
-import config from "config";
+//import config from "config";
 import passport from "./auth/passport.js";
 // Routes
 import authRoutes from "./routes/authRoutes.js";
@@ -38,7 +38,7 @@ const app = express();
 app.use("/static", express.static(path.join(__dirname, "page")));
 app.use(
   cors({
-    origin: config.get("Client_Base_Url"),
+    origin: '*',
     credentials: true,
   })
 );
@@ -67,7 +67,7 @@ app.get("/api/hello", (req, res) => {
 // Setup Sessions
 app.use(
   session({
-    secret: config.get("GOOGLE_CLIENT_SECRET"),
+    secret: process.env.GOOGLE_CLIENT_SECRET,
     resave: false,
     saveUninitialized: false,
     cookie: {
@@ -94,9 +94,10 @@ app.use("/api/session", sessionRoutes);
 app.use("/api/user", userRoutes);
 
 // Connect to MongoDB
-console.log(config.get("mongoURI"));
+//console.log(config.get("mongoURI"));
+const URI = `mongodb+srv://${process.env.DB_USER}:${process.env.DB_PASSWORD}@cluster0.h3bmy.mongodb.net/?retryWrites=true&w=majority&tls=true&appName=Cluster0`
 mongoose
-  .connect(config.get("mongoURI"), {
+  .connect(URI, {
     useNewUrlParser: true,
     useUnifiedTopology: true,
   })
