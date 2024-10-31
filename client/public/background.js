@@ -802,17 +802,6 @@ chrome.tabs.onDetached.addListener((tabId, detachInfo) => {
 
 
 
-
-
-
-
-
-
-
-
-
-
-
 // Retrieve session
 chrome.storage.local.get(["owl_watch_session"], (result) => {
   console.log("Retrieved session from storage:", result);
