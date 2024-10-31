@@ -545,6 +545,7 @@ chrome.runtime.onInstalled.addListener(initializeLazyLoadSettings);
 
 // Function to handle tab grouping or ungrouping when a tab is updated
 const handleTabGrouping = (tabId, changeInfo, tab) => {
+  CreateOrUpdateGroupCache();
   if (autoGroupingEnabled && changeInfo.status === "complete" && tab.url) {
     // Retrieve the stored session with groups and patterns
     chrome.storage.local.get("owl_watch_session", (result) => {
@@ -647,7 +648,7 @@ const removeTabFromSessionGroup = (tabId) => {
 
 const CreateOrUpdateGroupCache = () => {
   // Query all existing tab groups
-  chrome.tabGroups.query({}, (groups) => {
+  chrome.tabGroups.query({}, (chromeGroups) => {
   
     // Retrieve the session object from storage (or create a default one)
     chrome.storage.local.get("owl_watch_session", (result) => {
@@ -658,7 +659,7 @@ const CreateOrUpdateGroupCache = () => {
       }
 
       // Map Chrome groups while preserving existing groups and patterns in session
-      groups.forEach((chromeGroup) => {
+      chromeGroups.forEach((chromeGroup) => {
         // Find if the Chrome group already exists in the session
         let existingGroup = session.groups.find((g) => g.id === chromeGroup.id);
 
@@ -690,3 +691,129 @@ chrome.runtime.onInstalled.addListener(() => {
   CreateOrUpdateGroupCache();
 });
 
+
+chrome.tabGroups.onRemoved.addListener((groupId) => {
+  chrome.storage.local.get(["owl_watch_session"], (result) => {
+    let session = result.owl_watch_session || { groups: [] };
+    // Remove the group from the session state
+    session.groups = session.groups.filter((group) => group.id !== groupId);
+    
+    chrome.storage.local.set({ owl_watch_session: session }, () => {
+      console.log(`Group ID ${groupId} removed from session storage.`);
+    });
+  });
+});
+
+chrome.tabGroups.onUpdated.addListener((group) => {
+  chrome.storage.local.get(["owl_watch_session"], (result) => {
+    let session = result.owl_watch_session || { groups: [] };
+    const groupIndex = session.groups.findIndex((g) => g.id === group.id);
+    
+    if (groupIndex !== -1) {
+      // Update the group properties in the session
+      session.groups[groupIndex].name = group.title;
+      session.groups[groupIndex].color = group.color;
+      session.groups[groupIndex].collapsed = group.collapsed;
+
+      chrome.storage.local.set({ owl_watch_session: session }, () => {
+        console.log(`Group ID ${group.id} updated in session storage.`);
+      });
+    }
+  });
+});
+
+
+chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
+  if (removeInfo.isWindowClosing) return; // Ignore tabs closed due to window closing
+
+  chrome.tabs.get(tabId, (tab) => {
+    if (chrome.runtime.lastError) return; // If tab doesn't exist, return early
+
+    const groupId = tab.groupId;
+    if (groupId !== -1) {
+      // Update the session to remove the tab if it's part of a group
+      chrome.storage.local.get(["owl_watch_session"], (result) => {
+        let session = result.owl_watch_session || { groups: [] };
+        const groupIndex = session.groups.findIndex((group) => group.id === groupId);
+
+        if (groupIndex !== -1) {
+          // Remove the tab ID from the group if tracking individual tabs (optional)
+          session.groups[groupIndex].tabs = session.groups[groupIndex].tabs.filter((id) => id !== tabId);
+          chrome.storage.local.set({ owl_watch_session: session });
+        }
+      });
+    }
+  });
+});
+
+
+
+chrome.tabGroups.onCreated.addListener((group) => {
+  chrome.storage.local.get(["owl_watch_session"], (result) => {
+    let session = result.owl_watch_session || { groups: [] };
+
+    // Add the new group to the session if not already tracked
+    session.groups.push({
+      id: group.id,
+      name: group.title || "Untitled",
+      color: group.color,
+      collapsed: group.collapsed,
+      tabs: [], // Optional: Track tab IDs within this group
+    });
+
+    chrome.storage.local.set({ owl_watch_session: session }, () => {
+      console.log(`New group ID ${group.id} added to session storage.`);
+    });
+  });
+});
+
+chrome.tabs.onAttached.addListener((tabId, attachInfo) => {
+  chrome.tabs.get(tabId, (tab) => {
+    if (tab.groupId !== -1) {
+      // Handle tab being added to a group
+      chrome.storage.local.get(["owl_watch_session"], (result) => {
+        let session = result.owl_watch_session || { groups: [] };
+        const group = session.groups.find((group) => group.id === tab.groupId);
+
+        if (group) {
+          group.tabs.push(tabId);
+          chrome.storage.local.set({ owl_watch_session: session });
+        }
+      });
+    }
+  });
+});
+
+chrome.tabs.onDetached.addListener((tabId, detachInfo) => {
+  chrome.tabs.get(tabId, (tab) => {
+    if (tab.groupId === -1) {
+      // Handle tab being removed from a group
+      chrome.storage.local.get(["owl_watch_session"], (result) => {
+        let session = result.owl_watch_session || { groups: [] };
+        session.groups = session.groups.map((group) => ({
+          ...group,
+          tabs: group.tabs.filter((id) => id !== tabId),
+        }));
+        chrome.storage.local.set({ owl_watch_session: session });
+      });
+    }
+  });
+});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Retrieve session
+chrome.storage.local.get(["owl_watch_session"], (result) => {
+  console.log("Retrieved session from storage:", result);
+});
