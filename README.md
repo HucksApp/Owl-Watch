@@ -9,6 +9,7 @@ Owl Watch is a  🧩 Chrome extension designed to help users manage their tabs e
 
 * Watcher : background tab watcher
 * Tab Manager : Tab managemant
+* Tab Group: Tab Grouping and Tab Group Management
 * Session Manager : Session Manager
 * Quick Actions : Quick action Acesss
 * Voice Command : Voice command Action
