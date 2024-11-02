@@ -89,7 +89,6 @@ const lightTheme = createTheme({
     MuiListItem: {
       styleOverrides: {
         root: {
-          backgroundColor: "#f9f9f1",
           fontWeight: "1000",
           boxSizing: "border-box",
         },
