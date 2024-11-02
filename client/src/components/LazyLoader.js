@@ -63,7 +63,7 @@ const LazyLoader = () => {
 
   return (
     <Container sx={{ marginBottom: '10px', paddingBottom: '30px' }}>
-      <Typography variant="h5">Lazy Loading Settings</Typography>
+      <Typography variant="h5">Lazy Loading</Typography>
 
       {/* Lazy Loading Mode Selection */}
       <FormControl component="fieldset" style={{ marginTop: '16px' }}>
