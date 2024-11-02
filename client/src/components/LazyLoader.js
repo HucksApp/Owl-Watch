@@ -122,7 +122,6 @@ const LazyLoader = () => {
             padding: '10px',
             border: '1px solid #ccc',
             borderRadius: '8px',
-            backgroundColor: 'rgba(241, 241, 241, 0.7)',
             overflow: 'scroll',
           }}
         >
