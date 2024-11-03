@@ -33,7 +33,7 @@ Owl watch Authentication and storage server.
 │     └──📄 debug.js                        # show all api accessible Routes
 │
 │
-├──📄 /.env                                 # server enviromental variables
+├──📄 /.env                                 # server enviroment variables
 ├──📄 /app.js                               # server Defination and initialization
 ├──📄 nodemon.json                          # dev server configuration
 ├──📄 /server.js                            # Main server file to start the application
