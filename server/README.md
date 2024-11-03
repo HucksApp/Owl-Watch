@@ -9,11 +9,6 @@ Owl watch Authentication and storage server.
 ├──📁 /auth/                                 # Authentication
 │     └──📄 passport.js                      # Pasport and google Oauth setup
 │
-├──📁 /config/                               # App Configurations 
-│     ├──📄 default.json                     # default configuration
-│     ├──📄 development.json                 # dev  ---
-│     └──📄 production.json                  # production  ---
-│
 ├──📁 /controllers/                          # Logics for handling requests
 │     ├──📄 authController.js                # Authentication handling
 │     ├──📄 userController.js                # user request handling
@@ -38,6 +33,7 @@ Owl watch Authentication and storage server.
 │     └──📄 debug.js                        # show all api accessible Routes
 │
 │
+├──📄 /.env                                 # server enviromental variables
 ├──📄 /app.js                               # server Defination and initialization
 ├──📄 nodemon.json                          # dev server configuration
 ├──📄 /server.js                            # Main server file to start the application
