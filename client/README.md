@@ -73,7 +73,7 @@ Theme | Light and Dark Theme |      🖤        🤍
 $ git clone https://github.com/HucksApp/Owl-Watch
 $ cd client
 $ npm install
-$ npm build
+$ npm run build
 # Load the build to browser Extension
 ```
 
