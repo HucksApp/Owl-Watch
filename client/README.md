@@ -1,5 +1,5 @@
 # client (Owl Watch UI)
-Chrome browser (tab and session manager) app UI
+Chrome browser extension (tab and session manager) app UI
 ## ⛩ Project Structure
 ```
 📁 /Client/
