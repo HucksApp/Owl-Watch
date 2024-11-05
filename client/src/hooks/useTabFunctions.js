@@ -54,6 +54,7 @@ const useTabFunctions = ({
           chrome.tabs.move(tab.id, { windowId: newWindow.id, index: -1 });
         });
       });
+      setHighlightedTabs([]);
     }
   };
 
@@ -91,6 +92,7 @@ const useTabFunctions = ({
         saveSessionOrderToStorage(newSessionOrder); // Update local storage
         return updatedSessions; // Update state
       });
+      setHighlightedTabs([]);
     } catch (error) {
       console.error("Error saving highlighted session:", error);
     }

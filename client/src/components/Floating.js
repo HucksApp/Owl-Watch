@@ -49,7 +49,7 @@ const Floating = ({ toggleAppBar, showAppBar }) => {
             aria-label="menu"
             size="small"
             onClick={handleClick}
-            style={{ cursor: "grab" }}
+            style={{ cursor: "grab", backgroundColor:"#10BECD" }}
           >
             <MenuIcon sx={{ fontWeight: "1000" }} />
           </Fab>

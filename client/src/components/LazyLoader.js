@@ -75,15 +75,18 @@ const LazyLoader = () => {
           <FormControlLabel
             value="all"
             control={<Radio />}
+            style={{ fontWeight: "1000" }}
             label="Lazy Load All Tabs"
           />
           <FormControlLabel
             value="urls"
             control={<Radio />}
+            style={{ fontWeight: "1000" }}
             label="Lazy Load Specific URLs"
           />
           <FormControlLabel
             value="exclude"
+            style={{ fontWeight: "1000" }}
             control={<Radio />}
             label="Lazy Load All Except Specific URLs"
           />

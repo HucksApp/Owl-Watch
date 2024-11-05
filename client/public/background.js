@@ -545,7 +545,6 @@ chrome.runtime.onInstalled.addListener(initializeLazyLoadSettings);
 
 // Function to handle tab grouping or ungrouping when a tab is updated
 const handleTabGrouping = (tabId, changeInfo, tab) => {
-  CreateOrUpdateGroupCache();
   if (autoGroupingEnabled && changeInfo.status === "complete" && tab.url) {
     // Retrieve the stored session with groups and patterns
     chrome.storage.local.get("owl_watch_session", (result) => {
@@ -693,6 +692,7 @@ chrome.runtime.onInstalled.addListener(() => {
 
 
 chrome.tabGroups.onRemoved.addListener((groupId) => {
+  CreateOrUpdateGroupCache();
   chrome.storage.local.get(["owl_watch_session"], (result) => {
     let session = result.owl_watch_session || { groups: [] };
     // Remove the group from the session state
@@ -705,6 +705,7 @@ chrome.tabGroups.onRemoved.addListener((groupId) => {
 });
 
 chrome.tabGroups.onUpdated.addListener((group) => {
+  CreateOrUpdateGroupCache();
   chrome.storage.local.get(["owl_watch_session"], (result) => {
     let session = result.owl_watch_session || { groups: [] };
     const groupIndex = session.groups.findIndex((g) => g.id === group.id);
@@ -749,6 +750,7 @@ chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
 
 
 chrome.tabGroups.onCreated.addListener((group) => {
+  CreateOrUpdateGroupCache();
   chrome.storage.local.get(["owl_watch_session"], (result) => {
     let session = result.owl_watch_session || { groups: [] };
 

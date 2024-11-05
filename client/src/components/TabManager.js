@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 import {
   Button,
   List,
@@ -78,6 +78,10 @@ const TabManager = () => {
     );
   };
 
+  useEffect(() => {
+    if (highlightedTabs.length < 1) setShowSessionInput(false);
+  }, [highlightedTabs]);
+
   return (
     <Container>
       <Typography variant="h4" gutterBottom>
@@ -139,49 +143,8 @@ const TabManager = () => {
                 paddingLeft: "20px",
               }}
             >
-              Move Selected Tabs to New Window
+              Move to New Window
             </Button>
-
-            <Button
-              variant="contained"
-              color="primary"
-              onClick={() => setShowSessionInput(!showSessionInput)}
-              startIcon={<SaveAltIcon />}
-              sx={{
-                marginBottom: "5px",
-                justifyContent: "flex-start",
-                padding: "10px",
-                paddingLeft: "20px",
-              }}
-            >
-              Save Selected Tabs as Session
-            </Button>
-
-            {showSessionInput && (
-              <Box mt={2} display="flex" alignItems="center">
-                <TextField
-                  variant="outlined"
-                  label="Session Name"
-                  value={sessionName}
-                  onChange={(e) => setSessionName(e.target.value)}
-                  sx={{ marginRight: 2 }}
-                />
-                <Button
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSaveSession}
-                  startIcon={<SaveAltIcon />}
-                  sx={{
-                    marginBottom: "5px",
-                    justifyContent: "flex-start",
-                    padding: "10px",
-                    paddingLeft: "20px",
-                  }}
-                >
-                  Save
-                </Button>
-              </Box>
-            )}
 
             {/* Remove Highlighted Tabs Button */}
             <Button
@@ -198,6 +161,47 @@ const TabManager = () => {
             >
               Remove Selected Tabs
             </Button>
+
+            {!showSessionInput && (
+              <Button
+                variant="contained"
+                color="primary"
+                onClick={() => setShowSessionInput(!showSessionInput)}
+                startIcon={<SaveAltIcon />}
+                sx={{
+                  marginBottom: "5px",
+                  justifyContent: "flex-start",
+                  padding: "10px",
+                  paddingLeft: "20px",
+                }}
+              >
+                Save as Session
+              </Button>
+            )}
+
+            {showSessionInput && (
+              <Box mt={2} display="flex" alignItems="center" sx={{}}>
+                <TextField
+                  variant="outlined"
+                  label="Session Name"
+                  value={sessionName}
+                  onChange={(e) => setSessionName(e.target.value)}
+                  sx={{ marginRight: 2 }}
+                />
+                <Button
+                  variant="contained"
+                  color="primary"
+                  onClick={handleSaveSession}
+                  startIcon={<SaveAltIcon />}
+                  sx={{
+                    justifyContent: "center",
+                    padding: "10px",
+                  }}
+                >
+                  Save
+                </Button>
+              </Box>
+            )}
           </>
         )}
       </Box>

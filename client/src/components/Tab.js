@@ -80,7 +80,7 @@ const Tab = ({ tab, checkeable, handleChecked, handleChange }) => {
               <PushPinIcon
                 sx={{
                   fontWeight: 1000,
-                  color: "#007BFF",
+                  color: "#10BECD",
                 }}
                 fontSize="small"
               />
@@ -93,7 +93,7 @@ const Tab = ({ tab, checkeable, handleChecked, handleChange }) => {
             <PauseCircleFilledIcon
               sx={{
                 fontWeight: 1000,
-                color: "#007BFF",
+                color: "#10BECD",
               }}
               fontSize="small"
             />
@@ -116,7 +116,7 @@ const Tab = ({ tab, checkeable, handleChecked, handleChange }) => {
               <VolumeUpIcon
                 sx={{
                   fontWeight: 1000,
-                  color: "#007BFF",
+                  color: "#10BECD",
                 }}
                 fontSize="small"
               />
@@ -130,7 +130,7 @@ const Tab = ({ tab, checkeable, handleChecked, handleChange }) => {
               <SwitchAccessShortcutIcon
                 sx={{
                   fontWeight: 1000,
-                  color: "#007BFF",
+                  color: "#10BECD",
                 }}
                 fontSize="small"
               />
@@ -143,7 +143,7 @@ const Tab = ({ tab, checkeable, handleChecked, handleChange }) => {
             <CancelIcon
               sx={{
                 fontWeight: 1000,
-                color: "#007BFF",
+                color: "#10BECD",
               }}
               fontSize="small"
             />

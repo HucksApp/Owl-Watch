@@ -1,5 +1,5 @@
 import { createTheme } from "@mui/material/styles";
-import backgroundImage from "../assets/owlwatch1.png";
+import backgroundImage from "../assets/back2.png";
 import logoImage from "../assets/logo.png";
 
 /**
@@ -26,7 +26,7 @@ const lightTheme = createTheme({
     },
     text: {
       primary:  "#212529",
-      secondary: "#495057",
+      secondary: "#495057", 
       fontWeight:"bolder"
     },
   },
@@ -56,15 +56,15 @@ const lightTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "0.2s",
-          backgroundColor: "#007BFF",
+          backgroundColor:  "#10BECD",//"#007BFF",
           color:  "#212529",
           border: "none",
           fontWeight: "1000",
           transition: "background-color 0.3s ease",
           "&:hover": {
             backgroundColor: "#6610F2",
-            color: "#212529",
-            opacity: "0.6",
+            color: "#262525",
+            opacity: "0.8",
           },
         },
       },
@@ -89,6 +89,7 @@ const lightTheme = createTheme({
     MuiListItem: {
       styleOverrides: {
         root: {
+          backgroundColor: "#f9f9f7",
           fontWeight: "1000",
           boxSizing: "border-box",
         },
@@ -119,6 +120,7 @@ const lightTheme = createTheme({
     MuiTextField: {
       styleOverrides: {
         root: {
+          padding:"0px 4px",
           backgroundColor: "rgba(242,242,242, 0.7)",
           fontWeight: "1000",
         },
@@ -127,6 +129,8 @@ const lightTheme = createTheme({
     MuiSelect: {
       styleOverrides: {
         root: {
+          padding:"4px 4px",
+          borderRadius:"inherit",
           backgroundColor: "rgba(242,242,242, 0.7)",
           fontWeight: "1000",
         },
@@ -221,7 +225,8 @@ const darkTheme = createTheme({
       fontSize: "2rem",
     },
     h4: {
-      color: "#1976d2",
+      //color: "#1976d2",
+      fontSize: "2rem",
     },
     body1: {
       fontSize: "1rem",
@@ -232,7 +237,7 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           textTransform: "0.2s",
-          backgroundColor: "#61AFFF",
+          backgroundColor:  "#10BECD",//"#007BFF",
           color: "#E1E1E1",
           border: "none",
           fontWeight: "1000",
@@ -302,6 +307,24 @@ const darkTheme = createTheme({
       styleOverrides: {
         root: {
           fontWeight: "1000",
+          backgroundColor:"rgba(33,33,33,0.7)"
+        },
+      },
+    },
+    MuiSelect: {
+      styleOverrides: {
+        root: {
+          backgroundColor:"rgba(33,33,33,0.7)",
+          fontWeight: "1000",
+        },
+      },
+    },
+    MuiFormGroup: {
+      styleOverrides: {
+        root: {
+          padding:"4px 4px",
+          borderRadius:"5px",
+          backgroundColor:"rgba(33,33,33,0.7)",
         },
       },
     },

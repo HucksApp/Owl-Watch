@@ -109,19 +109,19 @@ const Watch = () => {
         >
           <FormControlLabel
             value="all"
-            style={{ fontWeight: "bolder" }}
+            style={{ fontWeight: "1000" }}
             control={<Radio />}
             label="Watch All Tabs"
           />
           <FormControlLabel
             value="urls"
-            style={{ fontWeight: "bolder" }}
+            style={{ fontWeight: "1000" }}
             control={<Radio />}
             label="Watch Specific URLs"
           />
           <FormControlLabel
             value="exclude"
-            style={{ fontWeight: "bolder" }}
+            style={{ fontWeight: "1000" }}
             control={<Radio />}
             label="Watch All Except Specific URLs"
           />
