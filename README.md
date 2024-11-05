@@ -41,7 +41,7 @@ Owl Watch is a  🧩 Chrome extension designed to help users manage their tabs e
 ## 🎥 DEMO VIDEO
 *  [Youtube demo](https://www.youtube.com/watch?v=vmEDoCKFEvg "owl_watch")
 ## UI UPDATES
-* [UI Updates](https://github.com/user-attachments/files/17634389/Screenshot.2024-11-05.at.1.07.03.AM.pdf)
+* [UI Updates](https://drive.google.com/file/d/1EgIq9iFjR_B1EOv-OxItR1Mm6qxPQlxb/view?usp=sharing)
 
 
 
