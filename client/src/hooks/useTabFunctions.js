@@ -115,17 +115,21 @@ const useTabFunctions = ({
     });
   };
 
-  // Function to close tab by matching title or URL
-  const closeTabByMatch = (match) => {
-    const tabToClose = tabs.find(
-      (tab) =>
-        tab.title.toLowerCase().includes(match.toLowerCase()) ||
-        tab.url.toLowerCase().includes(match.toLowerCase())
-    );
-    if (tabToClose) {
-      closeTab(tabToClose.id);
-    }
-  };
+  // Function to close all tabs matching the title or URL
+const closeTabByMatch = (match) => {
+  const matchingTabs = tabs.filter(
+    (tab) =>
+      tab.title.toLowerCase().includes(match.toLowerCase()) ||
+      tab.url.toLowerCase().includes(match.toLowerCase())
+  );
+
+  matchingTabs.forEach((tab) => closeTab(tab.id));
+
+  // Refresh the tab list after closing the matched tabs
+  if (matchingTabs.length > 0) {
+    fetchTabs();
+  }
+};
 
   // Close a particular tab by ID
   const closeTab = async (tabId) => {

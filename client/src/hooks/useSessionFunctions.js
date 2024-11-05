@@ -42,6 +42,7 @@ const saveSession = async (sessionName) => {
   
           return updatedSessions; // Update state
         });
+        fetchSessions()
       } catch (error) {
         console.error("Error saving session:", error);
       }
@@ -65,6 +66,7 @@ const saveSession = async (sessionName) => {
     try {
       await axios.delete(`${BASE_URL}/api/session/${sessionId}`);
       setSessions(sessions.filter((session) => session._id !== sessionId));
+      fetchSessions()
     } catch (error) {
       console.error("Error deleting session:", error);
     }

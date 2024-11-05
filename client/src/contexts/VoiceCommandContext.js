@@ -55,8 +55,8 @@ const VoiceCommandContext = createContext();
 export const VoiceCommandProvider = ({ children }) => {
   const [listening, setListening] = useState(false);
   const [recognition, setRecognition] = useState(null);
+
   const {
-    closeTab,
     closeNonActiveTabs,
     closeAllTabs,
     closeTabByMatch,
@@ -67,93 +67,82 @@ export const VoiceCommandProvider = ({ children }) => {
   } = useCommandStructure();
 
   useEffect(() => {
+    // Initialize the recognition instance once on mount
     if ("webkitSpeechRecognition" in window) {
       const newRecognition = new window.webkitSpeechRecognition();
       newRecognition.lang = "en-US";
       newRecognition.continuous = true;
       newRecognition.interimResults = false;
-
-      newRecognition.onresult = (event) => {
-        const command = event.results[0][0].transcript.toLowerCase();
-
-        // Execute commands based on recognized speech
-        if (command.includes("close non-active tabs")) {
-          closeNonActiveTabs();
-        } else if (command.includes("close all tabs")) {
-          closeAllTabs();
-        } else if (command.startsWith("close ")) {
-          const match = command.replace("close ", "").trim();
-          closeTabByMatch(match);
-        } else if (command.includes("save session")) {
-          const commandParts = command.split(" ");
-          if (commandParts.length > 2) {
-            const sessionName = commandParts.slice(2).join(" ");
-            saveSession(sessionName);
-          } else saveSession("session by VoiceCommand");
-        } else if (command.includes("restore session")) {
-          const sessionToRestore = sessions[sessions.length - 1];
-          restoreSession(sessionToRestore);
-        } else if (command.includes("delete session")) {
-          const sessionToDelete = sessions[sessions.length - 1];
-          deleteSession(sessionToDelete._id);
-        }
-      };
-
-      newRecognition.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        setListening(false);
-      };
-
-      newRecognition.onend = () => {
-        if (listening) {
-          startRecognition(newRecognition);
-        }
-      };
-
       setRecognition(newRecognition);
     } else {
-      console.warn("webkitSpeechRecognition is not supported in this browser.");
+      console.warn("Speech Recognition API not supported in this browser.");
     }
-  }, [
-    closeNonActiveTabs,
-    closeAllTabs,
-    closeTabByMatch,
-    saveSession,
-    restoreSession,
-    deleteSession,
-  ]);
+  }, []);
 
-  const startRecognition = (newRecognition) => {
-    try {
-      newRecognition.start();
-    } catch (error) {
-      console.error("Error starting recognition:", error);
-      setListening(false);
+  const handleResult = (event) => {
+    const transcript = event.results[event.resultIndex][0].transcript
+      .trim()
+      .toLowerCase();
+    if (event.results[event.resultIndex].isFinal) {
+      console.log("Final command received =>", transcript);
+
+      // Execute commands based on recognized speech
+      if (transcript.includes("close non-active tabs")) {
+        closeNonActiveTabs();
+      } else if (transcript.includes("close all tabs")) {
+        closeAllTabs();
+      } else if (transcript.startsWith("close ")) {
+        const match = transcript.replace("close ", "").trim();
+        closeTabByMatch(match);
+      } else if (transcript.includes("save session")) {
+        const commandParts = transcript.split(" ");
+        const sessionName =
+          commandParts.length > 2
+            ? commandParts.slice(2).join(" ")
+            : `vm ${Date.now()}`;
+        saveSession(sessionName);
+      } else if (transcript.includes("restore session")) {
+        const sessionToRestore = sessions[sessions.length - 1];
+        restoreSession(sessionToRestore);
+      } else if (transcript.includes("delete session")) {
+        const sessionToDelete = sessions[sessions.length - 1];
+        deleteSession(sessionToDelete._id);
+      }
     }
   };
 
-  useEffect(() => {
-    if (recognition) {
-      if (listening) {
-        startRecognition(recognition); // Start only when listening is true
-      } else {
-        recognition.stop();
-      }
-    }
-  }, [listening, recognition]);
+  const handleError = (event) => {
+    console.error("Speech recognition error:", event.error);
+    setListening(false);
+    recognition?.stop();
+  };
 
   const startListening = async () => {
-    if (listening) return;
+    if (listening || !recognition) return;
     try {
-      await navigator.mediaDevices.getUserMedia({ audio: true });
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      stream.getTracks().forEach((track) => track.stop()); // Stop the stream after permission is granted
+      recognition.onresult = handleResult;
+      recognition.onerror = handleError;
+      recognition.onend = () => {
+        if (listening) recognition.start(); // Restart if still listening
+      };
+
+      recognition.start(); // Start recognition
       setListening(true);
     } catch (error) {
-      console.error("Microphone access denied:", error);
+      console.error("Microphone access error:", error);
       alert("Microphone access is required to use voice commands.");
     }
   };
 
   const stopListening = () => {
+    if (recognition) {
+      recognition.onresult = null;
+      recognition.onerror = null;
+      recognition.onend = null; // Detach all listeners
+      recognition.stop(); // Stop recognition
+    }
     setListening(false);
   };
 
