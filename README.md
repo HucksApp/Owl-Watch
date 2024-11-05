@@ -1,5 +1,5 @@
 #  🦉 OWL WATCH  
-Owl Watch is a  🧩 Chrome extension designed to help users manage their tabs and browser sessions efficiently, with features that allow tracking, closing inactive tabs, removing dublication, Grouping, Lazyloading, Voice Command....
+Owl Watch is a  🧩 Chrome extension designed to help users manage their tabs and browser sessions efficiently, with features that allow tracking, closing inactive tabs, removing dublication, Auto Grouping, Lazyloading, Voice Command....
 
 ![OWL WATCH](https://github.com/user-attachments/assets/dff2ca9d-0d7e-4579-b427-6bdb205ef769)
 # [CLIENT  (Frontend UI)](./client) 
