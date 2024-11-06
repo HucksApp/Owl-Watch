@@ -229,7 +229,7 @@ const TabGroups = () => {
     <DragDropContext onDragEnd={onDragEnd}>
       <Box className="tab-groups" sx={{ padding: 2 }}>
         <Box className="grouping-controls" sx={{ marginBottom: 5 }}>
-          <FormGroup    sx={{ marginBottom: 1}}   >
+          <FormGroup sx={{ marginBottom: 1 }}>
             <Typography variant="h6">
               {`Auto Grouping ${autoGrouping ? "On" : "Off"}`}
             </Typography>
@@ -251,7 +251,7 @@ const TabGroups = () => {
           <Select
             value={groupBy}
             onChange={(e) => setGroupBy(e.target.value)}
-            sx={{ marginRight: 1, padding: "5px 0px",  marginBottom: 1 }}
+            sx={{ marginRight: 1, padding: "5px 0px", marginBottom: 1 }}
           >
             <MenuItem value="selection">Group by Selection</MenuItem>
             <MenuItem value="urlPattern">Group by URL Pattern</MenuItem>
@@ -260,7 +260,7 @@ const TabGroups = () => {
             label="Group Name"
             value={groupName}
             onChange={(e) => setGroupName(e.target.value)}
-            sx={{ marginRight: 1}}
+            sx={{ marginRight: 1 }}
           />
           <ColorPicker
             selectedColor={groupColor}
@@ -275,7 +275,7 @@ const TabGroups = () => {
                 value={urlPattern}
                 onChange={(e) => setUrlPattern(e.target.value)}
                 multiline
-                sx={{ marginRight: 1 }}
+                sx={{ marginRight: 1, marginBottom: 1 }}
               />
               <Button
                 variant="contained"
