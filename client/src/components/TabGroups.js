@@ -27,6 +27,9 @@ import ColorPicker from "./ColorPicker";
 import RepartitionIcon from "@mui/icons-material/Repartition";
 import ExpandIcon from "@mui/icons-material/Expand";
 import CompressIcon from "@mui/icons-material/Compress";
+import WindowIcon from '@mui/icons-material/Window';
+import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
+
 import "../styles/list.css";
 import Tab from "./Tab";
 
@@ -56,6 +59,8 @@ const TabGroups = () => {
     reorderGroupedTabs,
     reorderTabsWithinGroup,
     handleGroupBySelection,
+    moveGroupToNewWindow,
+    openNewTabInGroup,
   } = useCommandStructure();
 
   useEffect(() => {
@@ -523,6 +528,47 @@ const TabGroups = () => {
                           )}
                         </IconButton>
                       </Tooltip>
+
+
+                      <Tooltip
+                        title="Move Group to New window"
+                        sx={{
+                          marginRight: 1,
+                          marginLeft: 1,
+                          backgroundColor: refinedColors[group.color],
+                        }}
+                      >
+                        <IconButton
+                          color="inherit"
+                          onClick={() => moveGroupToNewWindow(group.id)}
+                        >
+                          <WindowIcon
+                            fontSize="small"
+                            sx={{ fontWeight: "1000" }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+
+                      <Tooltip
+                        title="Open New Tab In Group"
+                        sx={{
+                          marginRight: 1,
+                          marginLeft: 1,
+                          backgroundColor: refinedColors[group.color],
+                        }}
+                      >
+                        <IconButton
+                          color="inherit"
+                          onClick={() => openNewTabInGroup(group.id)}
+                        >
+                          <OpenInBrowserIcon
+                            fontSize="small"
+                            sx={{ fontWeight: "1000" }}
+                          />
+                        </IconButton>
+                      </Tooltip>
+
+
                     </Box>
                   </Paper>
                 </AccordionDetails>

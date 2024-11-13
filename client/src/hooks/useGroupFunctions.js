@@ -421,6 +421,40 @@ const useGroupFunctions = ({ tabs, fetchTabs }) => {
     fetchTabs();
   };
 
+  // Wrapper function to move a group to a new window
+function moveGroupToNewWindow(groupId) {
+  console.log(groupId, "HEREEEE")
+    chrome.runtime.sendMessage(
+      { action: "moveGroupToNewWindow", groupId },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            `Error toggling collapse for group ID: ${groupId}. Error: ${chrome.runtime.lastError.message}`
+          );
+        } else {
+          console.log(response)
+        }
+      }
+    );
+}
+
+// Wrapper function to open a new tab in an existing group
+function openNewTabInGroup(groupId) {
+    chrome.runtime.sendMessage(
+      { action: "openNewTabInGroup", groupId },
+      (response) => {
+        if (chrome.runtime.lastError) {
+          console.error(
+            `Error toggling collapse for group ID: ${groupId}. Error: ${chrome.runtime.lastError.message}`
+          );
+        } else {
+          console.log(response)
+        }
+      }
+    );
+}
+
+
   return {
     ungroupTabs,
     ungroupTab,
@@ -438,6 +472,8 @@ const useGroupFunctions = ({ tabs, fetchTabs }) => {
     fetchTabsInCategories,
     reorderGroupedTabs,
     reorderTabsWithinGroup,
+    moveGroupToNewWindow,
+    openNewTabInGroup,
   };
 };
 

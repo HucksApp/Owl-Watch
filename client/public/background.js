@@ -39,55 +39,13 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
     // Send response back to the message sender
     sendResponse({ status: "success", autoGroupingEnabled });
-  }else   if (request.message === "getTabs") {
-    // Get all current tabs, not just active ones
-    chrome.tabs.query({}, (tabs) => {
-      chrome.storage.local.get("owl_watch_session", (result) => {
-        const session = result.owl_watch_session || { tabs: [] };
-
-        // Enrich the tab data with last accessed time
-        const enrichedTabs = tabs.map((tab) => {
-          const cachedTab = session.tabs.find((t) => t.id === tab.id);
-          return {
-            ...tab,
-            lastAccessed: cachedTab ? cachedTab.lastAccessed : "Unknown",
-          };
-        });
-
-        sendResponse(enrichedTabs);
-      });
-    });
-    return true;
-  } else if (request.message === "closeTab") {
-    // Close a specific tab by tabId
-    const { tabId } = request;
-    chrome.tabs.remove(tabId, () => {
-      sendResponse({ status: "Tab closed" });
-    });
-    return true;
-  } else if (request.message === "closeNonActiveTabs") {
-    // Close all non-active tabs
-    chrome.tabs.query({}, (tabs) => {
-      const nonActiveTabs = tabs.filter((tab) => !tab.active);
-      nonActiveTabs.forEach((tab) => {
-        chrome.tabs.remove(tab.id, () => {
-          console.log(`Closed non-active tab: ${tab.url}`);
-        });
-      });
-      sendResponse({ status: "Non-active tabs closed" });
-    });
-    return true;
-  } else if (request.message === "closeAllTabs") {
-    // Close all open tabs
-    chrome.tabs.query({}, (tabs) => {
-      tabs.forEach((tab) => {
-        chrome.tabs.remove(tab.id, () => {
-          console.log(`Closed tab: ${tab.url}`);
-        });
-      });
-      sendResponse({ status: "All tabs closed" });
-    });
-    return true;
+  } else if (request.action === "moveGroupToNewWindow") {
+    console.log("Received moveGroupToNewWindow message with groupId:", request.groupId);
+    moveGroupToNewWindow(request.groupId);
+    sendResponse({ status: "done" });
+  } else if (request.action === "openNewTabInGroup") {
+    openNewTabInGroup(request.groupId).
+    sendResponse({ status: "done" });
   }
 });
 
@@ -808,3 +766,68 @@ chrome.tabs.onDetached.addListener((tabId, detachInfo) => {
 chrome.storage.local.get(["owl_watch_session"], (result) => {
   console.log("Retrieved session from storage:", result);
 });
+
+
+
+// Function to move a group to a new window
+const moveGroupToNewWindow = (groupId) => {
+  console.log("here0");
+  try {
+    // Retrieve all tabs in the specified group
+    chrome.tabs.query({ groupId }, (tabsInGroup) => {
+      if (tabsInGroup.length === 0) {
+        console.log("No tabs found in this group.");
+        return;
+      }
+
+      // Retrieve group information
+      chrome.tabGroups.get(groupId, (groupInfo) => {
+        console.log(groupInfo);
+        const tabIds = tabsInGroup.map((tab) => tab.id);
+        console.log(tabIds);
+
+        // Create a new window with the first tab in the group
+        chrome.windows.create({ tabId: tabIds[0], focused: true }, (newWindow) => {
+          console.log("here1");
+
+          // Move the remaining tabs to the new window
+          const moveTabs = tabIds.slice(1).map((tabId) => {
+            return chrome.tabs.move(tabId, { windowId: newWindow.id, index: -1 });
+          });
+
+          Promise.all(moveTabs) // Ensure all tabs are moved before continuing
+            .then(() => {
+              console.log("here2");
+              console.log(newWindow)
+              // Create a new group in the new window and group all the moved tabs
+              chrome.tabs.group({ tabIds: tabIds }, (newGroupId) => {
+
+                // Update the new group to match the original group’s title and color
+                chrome.tabGroups.update(newGroupId, {
+                  title: groupInfo.title,
+                  color: groupInfo.color,
+                });
+
+                console.log("here4");
+                console.log(`Moved group ${groupId} to new window with ID ${newWindow.id} and retained group settings.`);
+              });
+            })
+            .catch((error) => {
+              console.error("Error while moving tabs:", error);
+            });
+        });
+      });
+    });
+  } catch (error) {
+    console.error("Error moving group to new window:", error);
+  }
+};
+
+//open new tab in group
+const openNewTabInGroup = (groupId) => {
+  chrome.tabs.create({ active: true }, (newTab) => {
+    chrome.tabs.group({ tabIds: [newTab.id], groupId }, () => {
+      console.log(`New tab opened and added to group ${groupId}.`);
+    });
+  });
+};

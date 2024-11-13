@@ -127,6 +127,8 @@ export const CommandStructureProvider = ({ children }) => {
     moveUngroupedTabToGroup,
     fetchTabsInCategories,
     reorderTabsWithinGroup,
+    moveGroupToNewWindow,
+    openNewTabInGroup,
   } = useGroupFunctions({tabs, fetchTabs});
 
 
@@ -188,6 +190,8 @@ export const CommandStructureProvider = ({ children }) => {
         reorderTabsWithinGroup,
         updateAutoGroupingToggle,
         reorderGroupedTabs,
+        moveGroupToNewWindow,
+        openNewTabInGroup,
       }}
     >
       {children}
