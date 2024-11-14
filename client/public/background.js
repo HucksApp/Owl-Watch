@@ -39,7 +39,7 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     moveGroupToNewWindow(request.groupId);
     sendResponse({ status: "done" });
   } else if (request.action === "openNewTabInGroup") {
-    openNewTabInGroup(request.groupId)
+    openNewTabInGroup(request.groupId);
     sendResponse({ status: "done" });
   } else if (request.action === "refreshGroupCache") {
     CreateOrUpdateGroupCache();
