@@ -67,10 +67,6 @@ const App = () => {
     fetchTheme();
   }, []);
 
-  useEffect(() => {
-    // Send a message to the background script to refresh the cache
-    chrome.runtime.sendMessage({ action: "refreshGroupCache" });
-  }, []);
 
   return (
     <Router>
