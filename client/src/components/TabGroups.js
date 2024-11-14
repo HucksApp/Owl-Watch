@@ -465,7 +465,7 @@ const TabGroups = () => {
                       ))}
                       {provided.placeholder}
                     </List>
-                    <Box sx={{ padding: "5px 0px" }}>
+                    <Box sx={{ padding: "10px 0px" }}>
                       <Tooltip
                         title="Ungroup"
                         sx={{

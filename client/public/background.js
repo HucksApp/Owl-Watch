@@ -40,6 +40,9 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     sendResponse({ status: "done" });
   } else if (request.action === "openNewTabInGroup") {
     openNewTabInGroup(request.groupId).sendResponse({ status: "done" });
+  } else if (request.action === "refreshGroupCache") {
+    CreateOrUpdateGroupCache();
+    sendResponse({ status: "cache_refreshed" });
   }
 });
 
@@ -549,8 +552,15 @@ const handleTabGrouping = (tabId, changeInfo, tab) => {
             });
           }
         } else {
-          chrome.tabs.ungroup(tabId, () => {
-            removeTabFromSessionGroup(tabId);
+          chrome.tabs.get(tabId, (tab) => {
+            // Check if tab is in a group already(check for opening new tab to group)
+            if (tab.groupId !== -1) {
+              return;
+            }
+            // If no group matches, ungroup the tab and remove it from session groups
+            chrome.tabs.ungroup(tabId, () => {
+              removeTabFromSessionGroup(tabId);
+            });
           });
         }
       });
@@ -641,10 +651,7 @@ chrome.tabGroups.onRemoved.addListener((groupId) => {
     let session = result.owl_watch_session || { groups: [] };
     // Remove the group from the session state
     session.groups = session.groups.filter((group) => group.id !== groupId);
-
-    chrome.storage.local.set({ owl_watch_session: session }, () => {
-       CreateOrUpdateGroupCache();
-    });
+    chrome.storage.local.set({ owl_watch_session: session });
   });
 });
 
@@ -662,7 +669,6 @@ chrome.tabGroups.onUpdated.addListener((group) => {
       chrome.storage.local.set({ owl_watch_session: session });
     }
   });
-  CreateOrUpdateGroupCache();
 });
 
 chrome.tabs.onRemoved.addListener((tabId, removeInfo) => {
@@ -704,10 +710,7 @@ chrome.tabGroups.onCreated.addListener((group) => {
       tabs: [], // Optional: Track tab IDs within this group
     });
 
-    chrome.storage.local.set({ owl_watch_session: session }, () => {
-      CreateOrUpdateGroupCache();
-    });
-   
+    chrome.storage.local.set({ owl_watch_session: session });
   });
 });
 
@@ -766,7 +769,6 @@ const moveGroupToNewWindow = (groupId) => {
         chrome.windows.create(
           { tabId: tabIds[0], focused: true },
           (newWindow) => {
-
             // Move the remaining tabs to the new window
             const moveTabs = tabIds.slice(1).map((tabId) => {
               return chrome.tabs.move(tabId, {
@@ -784,7 +786,6 @@ const moveGroupToNewWindow = (groupId) => {
                     title: groupInfo.title,
                     color: groupInfo.color,
                   });
-
                 });
               })
               .catch((error) => {

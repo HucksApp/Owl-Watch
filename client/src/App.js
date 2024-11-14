@@ -28,6 +28,8 @@ import {
  * @returns {JSX.Element} The rendered application.
  */
 
+/* global chrome */ // Chrome extension API
+
 const App = () => {
   /**
    * State to manage the current theme (dark/light mode).
@@ -63,6 +65,11 @@ const App = () => {
       }
     };
     fetchTheme();
+  }, []);
+
+  useEffect(() => {
+    // Send a message to the background script to refresh the cache
+    chrome.runtime.sendMessage({ action: "refreshGroupCache" });
   }, []);
 
   return (

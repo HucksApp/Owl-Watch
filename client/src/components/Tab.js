@@ -66,6 +66,19 @@ const Tab = ({ tab, checkeable, handleChecked, handleChange }) => {
       </div>
 
       <div className="listcontentButtons">
+        {!tab.isActive && (
+          <Tooltip title="Switch To Tab">
+            <IconButton onClick={() => switchToTab(tab.id)}>
+              <SwitchAccessShortcutIcon
+                sx={{
+                  fontWeight: 1000,
+                  color: "#10BECD",
+                }}
+                fontSize="small"
+              />
+            </IconButton>
+          </Tooltip>
+        )}
         <Tooltip title={tab.pinned ? "Unpin  Tab" : "pin Tab"}>
           <IconButton onClick={() => pinUnpinTab(tab.id, !tab.pinned)}>
             {tab.pinned ? (
@@ -123,20 +136,6 @@ const Tab = ({ tab, checkeable, handleChecked, handleChange }) => {
             )}
           </IconButton>
         </Tooltip>
-
-        {!tab.isActive && (
-          <Tooltip title="Switch To Tab">
-            <IconButton onClick={() => switchToTab(tab.id)}>
-              <SwitchAccessShortcutIcon
-                sx={{
-                  fontWeight: 1000,
-                  color: "#10BECD",
-                }}
-                fontSize="small"
-              />
-            </IconButton>
-          </Tooltip>
-        )}
 
         <Tooltip title="Close Tab">
           <IconButton onClick={() => closeTab(tab.id)}>
