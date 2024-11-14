@@ -27,8 +27,8 @@ import ColorPicker from "./ColorPicker";
 import RepartitionIcon from "@mui/icons-material/Repartition";
 import ExpandIcon from "@mui/icons-material/Expand";
 import CompressIcon from "@mui/icons-material/Compress";
-import WindowIcon from '@mui/icons-material/Window';
-import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
+import WindowIcon from "@mui/icons-material/Window";
+import OpenInBrowserIcon from "@mui/icons-material/OpenInBrowser";
 
 import "../styles/list.css";
 import Tab from "./Tab";
@@ -440,31 +440,6 @@ const TabGroups = () => {
                   }}
                 >
                   <Paper ref={provided.innerRef} {...provided.droppableProps}>
-                    <List>
-                      {group.tabs.map((tab, index) => (
-                        <Draggable
-                          key={tab.id}
-                          draggableId={tab.id.toString()}
-                          index={index}
-                        >
-                          {(provided) => (
-                            <motion.div
-                              ref={provided.innerRef}
-                              {...provided.draggableProps}
-                              {...provided.dragHandleProps}
-                              initial={{ opacity: 0 }}
-                              animate={{ opacity: 1 }}
-                            >
-                              <ListItem divider dense alignItems="flex-start">
-                                <Tab tab={tab} checkeable={false} />
-                                {/*<ListItemText primary={tab.title} />*/}
-                              </ListItem>
-                            </motion.div>
-                          )}
-                        </Draggable>
-                      ))}
-                      {provided.placeholder}
-                    </List>
                     <Box sx={{ padding: "10px 0px" }}>
                       <Tooltip
                         title="Ungroup"
@@ -529,7 +504,6 @@ const TabGroups = () => {
                         </IconButton>
                       </Tooltip>
 
-
                       <Tooltip
                         title="Move Group to New window"
                         sx={{
@@ -567,9 +541,32 @@ const TabGroups = () => {
                           />
                         </IconButton>
                       </Tooltip>
-
-
                     </Box>
+                    <List>
+                      {group.tabs.map((tab, index) => (
+                        <Draggable
+                          key={tab.id}
+                          draggableId={tab.id.toString()}
+                          index={index}
+                        >
+                          {(provided) => (
+                            <motion.div
+                              ref={provided.innerRef}
+                              {...provided.draggableProps}
+                              {...provided.dragHandleProps}
+                              initial={{ opacity: 0 }}
+                              animate={{ opacity: 1 }}
+                            >
+                              <ListItem divider dense alignItems="flex-start">
+                                <Tab tab={tab} checkeable={false} />
+                                {/*<ListItemText primary={tab.title} />*/}
+                              </ListItem>
+                            </motion.div>
+                          )}
+                        </Draggable>
+                      ))}
+                      {provided.placeholder}
+                    </List>
                   </Paper>
                 </AccordionDetails>
               </Accordion>
