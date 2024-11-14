@@ -27,8 +27,8 @@ import ColorPicker from "./ColorPicker";
 import RepartitionIcon from "@mui/icons-material/Repartition";
 import ExpandIcon from "@mui/icons-material/Expand";
 import CompressIcon from "@mui/icons-material/Compress";
-import WindowIcon from '@mui/icons-material/Window';
-import OpenInBrowserIcon from '@mui/icons-material/OpenInBrowser';
+import WindowIcon from "@mui/icons-material/Window";
+import OpenInBrowserIcon from "@mui/icons-material/OpenInBrowser";
 
 import "../styles/list.css";
 import Tab from "./Tab";
@@ -340,7 +340,16 @@ const TabGroups = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           >
-                            <ListItem divider dense alignItems="flex-start">
+                            <ListItem
+                              divider
+                              dense
+                              alignItems="flex-start"
+                              sx={{
+                                backgroundColor: tab.isActive
+                                  ? "rgba(40,167,69, 0.7)" // Active Tab (Greenish)
+                                  : "inherit",
+                              }}
+                            >
                               <Tab
                                 key={tab.id}
                                 tab={tab}
@@ -394,7 +403,16 @@ const TabGroups = () => {
                             initial={{ opacity: 0 }}
                             animate={{ opacity: 1 }}
                           >
-                            <ListItem divider dense alignItems="flex-start">
+                            <ListItem
+                              divider
+                              dense
+                              alignItems="flex-start"
+                              sx={{
+                                backgroundColor: tab.isActive
+                                  ? "rgba(40,167,69, 0.7)" // Active Tab (Greenish)
+                                  : "inherit",
+                              }}
+                            >
                               <Tab tab={tab} checkeable={false} />
                             </ListItem>
                           </motion.div>
@@ -455,7 +473,16 @@ const TabGroups = () => {
                               initial={{ opacity: 0 }}
                               animate={{ opacity: 1 }}
                             >
-                              <ListItem divider dense alignItems="flex-start">
+                              <ListItem
+                                divider
+                                dense
+                                alignItems="flex-start"
+                                sx={{
+                                  backgroundColor: tab.isActive
+                                    ? "rgba(40,167,69, 0.7)" // Active Tab (Greenish)
+                                    : "inherit",
+                                }}
+                              >
                                 <Tab tab={tab} checkeable={false} />
                                 {/*<ListItemText primary={tab.title} />*/}
                               </ListItem>
@@ -529,7 +556,6 @@ const TabGroups = () => {
                         </IconButton>
                       </Tooltip>
 
-
                       <Tooltip
                         title="Move Group to New window"
                         sx={{
@@ -567,8 +593,6 @@ const TabGroups = () => {
                           />
                         </IconButton>
                       </Tooltip>
-
-
                     </Box>
                   </Paper>
                 </AccordionDetails>
