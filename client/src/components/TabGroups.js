@@ -422,7 +422,7 @@ const TabGroups = () => {
                   }}
                 >
                   <Typography sx={{ fontWeight: 1000 }}>
-                    {group.name}
+                    {group.name.charAt(0).toUpperCase() +  group.name.slice(1)}
                   </Typography>
                   <Typography
                     sx={{
