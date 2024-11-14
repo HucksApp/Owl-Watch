@@ -64,12 +64,6 @@ const TabGroups = () => {
   } = useCommandStructure();
 
   useEffect(() => {
-    // Send a message to the background script to refresh the cache
-    chrome.runtime.sendMessage({ action: "refreshGroupCache" });
-  }, []);
-
-
-  useEffect(() => {
     const getTabs = async () => {
       try {
         const { ungrouped, pinned, grouped } = await fetchTabsInCategories();
