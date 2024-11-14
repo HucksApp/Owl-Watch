@@ -9,7 +9,7 @@ import {
 } from "@mui/material";
 import CancelIcon from "@mui/icons-material/Cancel";
 import PushPinIcon from "@mui/icons-material/PushPin";
-import SwitchAccessShortcutIcon from "@mui/icons-material/SwitchAccessShortcut";
+import AssistantDirectionIcon from '@mui/icons-material/AssistantDirection';
 import PauseCircleFilledIcon from "@mui/icons-material/PauseCircleFilled";
 import VolumeUpIcon from "@mui/icons-material/VolumeUp";
 import VolumeOffIcon from "@mui/icons-material/VolumeOff";
@@ -69,7 +69,7 @@ const Tab = ({ tab, checkeable, handleChecked, handleChange }) => {
         {!tab.isActive && (
           <Tooltip title="Switch To Tab">
             <IconButton onClick={() => switchToTab(tab.id)}>
-              <SwitchAccessShortcutIcon
+              <AssistantDirectionIcon
                 sx={{
                   fontWeight: 1000,
                   color: "#10BECD",
