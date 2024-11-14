@@ -761,38 +761,74 @@ const moveGroupToNewWindow = (groupId) => {
         return;
       }
 
-      // Retrieve group information
+      // Retrieve group information from chrome.tabGroups
       chrome.tabGroups.get(groupId, (groupInfo) => {
         const tabIds = tabsInGroup.map((tab) => tab.id);
 
-        // Create a new window with the first tab in the group
-        chrome.windows.create(
-          { tabId: tabIds[0], focused: true },
-          (newWindow) => {
-            // Move the remaining tabs to the new window
-            const moveTabs = tabIds.slice(1).map((tabId) => {
-              return chrome.tabs.move(tabId, {
-                windowId: newWindow.id,
-                index: -1,
-              });
-            });
+        // Retrieve the owl_watch_session before making any changes
+        chrome.storage.local.get("owl_watch_session", (result) => {
+          let session = result.owl_watch_session || { groups: [] };
 
-            Promise.all(moveTabs) // Ensure all tabs are moved before continuing
-              .then(() => {
-                // Create a new group in the new window and group all the moved tabs
-                chrome.tabs.group({ tabIds: tabIds }, (newGroupId) => {
-                  // Update the new group to match the original group’s title and color
-                  chrome.tabGroups.update(newGroupId, {
-                    title: groupInfo.title,
-                    color: groupInfo.color,
+          // Find the group in the session to copy
+          const sessionGroupIndex = session.groups.findIndex(
+            (group) => group.id === groupId
+          );
+          const sessionGroup =
+            sessionGroupIndex !== -1 ? session.groups[sessionGroupIndex] : null;
+
+          if (sessionGroup) {
+            // Copy the group data to preserve its patterns and settings
+            const copiedGroup = { ...sessionGroup };
+
+            // Create a new window with the first tab in the group
+            chrome.windows.create(
+              { tabId: tabIds[0], focused: true },
+              (newWindow) => {
+                // Move the remaining tabs to the new window
+                const moveTabs = tabIds.slice(1).map((tabId) => {
+                  return chrome.tabs.move(tabId, {
+                    windowId: newWindow.id,
+                    index: -1,
                   });
                 });
-              })
-              .catch((error) => {
-                console.error("Error while moving tabs:", error);
-              });
+
+                Promise.all(moveTabs) // Ensure all tabs are moved before continuing
+                  .then(() => {
+                    // Create a new group in the new window and group all the moved tabs
+                    chrome.tabs.group({ tabIds: tabIds }, (newGroupId) => {
+                      // Update the new group to match the original group’s title and color
+                      chrome.tabGroups.update(newGroupId, {
+                        title: groupInfo.title,
+                        color: groupInfo.color,
+                      });
+
+                      // Remove the old group from the session
+                      session.groups = session.groups.filter(
+                        (group) => group.id !== groupId
+                      );
+
+                      // Add the copied group with the new groupId
+                      copiedGroup.id = newGroupId; // Assign the new groupId
+                      session.groups.push(copiedGroup);
+
+                      // Save the updated session back to storage
+                      chrome.storage.local.set(
+                        { owl_watch_session: session },
+                        () => {
+                          console.log(
+                            `Group moved successfully, updated session with new group info.`
+                          );
+                        }
+                      );
+                    });
+                  })
+                  .catch((error) => {
+                    console.error("Error while moving tabs:", error);
+                  });
+              }
+            );
           }
-        );
+        });
       });
     });
   } catch (error) {
