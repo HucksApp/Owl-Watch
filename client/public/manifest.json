@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Owl Watch",
-  "description": "Manage active tabs, sessions, and save memory.",
+  "description": "Tabs Management and Grouping, session Management, supports voice command",
   "version": "1.0",
   "permissions": [
     "identity",
