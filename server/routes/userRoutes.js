@@ -1,6 +1,6 @@
 // /routes/sessionRoutes.js
 import express from "express";
-import { getUser } from "../controllers/userController.js";
+import { getUser, getPolicy } from "../controllers/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 
 const router = express.Router();
@@ -12,5 +12,6 @@ const router = express.Router();
  */
 
 router.get("/", authMiddleware, getUser);
+router.get("/private-policy", getPolicy);
 
 export default router;

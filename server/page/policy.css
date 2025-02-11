@@ -1,0 +1,38 @@
+body.policy{
+    font-family: Arial, sans-serif;
+    margin: 40px;
+    padding: 20px;
+    line-height: 1.6;
+    color: #333;
+}
+
+
+.policy img{
+    height: 30vh;
+    width: 20vw;
+}
+
+.policy header {
+    display: flex;
+    justify-content: flex-start\\;
+    align-items: center;
+    background-color: #666;
+    font-size: 2em;
+    /* text-align: center; */
+    padding: 20px;
+}
+
+
+
+.policy  h1, h2 {
+    color: #444;
+}
+.policy  section {
+    margin-bottom: 20px;
+}
+.policy  footer {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 14px;
+    color: #666;
+}

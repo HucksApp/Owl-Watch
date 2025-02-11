@@ -1,3 +1,10 @@
+import path from "path";
+import { fileURLToPath } from "url";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+
 /**
  * Retrieves the authenticated user's information.
  * 
@@ -11,6 +18,7 @@
  * @param {Object} res - The response object used to send a response to the client.
  * @returns {void} Responds with the user object or a 401 error message if no user is authenticated.
  */
+
 export const getUser = async (req, res) => {
   if (req.user) {
       res.json(req.user);
@@ -18,3 +26,10 @@ export const getUser = async (req, res) => {
       res.status(401).json({ message: 'No User' });
   }
 };
+
+
+
+export const getPolicy = async (req, res) => {
+      res.sendFile(path.join(__dirname, "..", "page", "policy.html"));
+};
+
