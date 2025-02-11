@@ -53,7 +53,6 @@ export const saveSession = async (req, res) => {
  */
 export const getSessions = async (req, res) => {
   try {
-    console.log(req.user.id, "hh")
     const sessions = await Session.find({ user: req.user.id });
     res.status(200).json(sessions);
   } catch (error) {

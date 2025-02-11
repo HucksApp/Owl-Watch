@@ -48,7 +48,6 @@ export const googleCallback = (req, res) => {
 export const googleLogin = async (req, res) => {
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const { token } = req.body;
-  console.log(token);
 
   if (!token) {
     return res.status(400).json({ message: "Token is required" });
@@ -102,7 +101,6 @@ export const googleLogin = async (req, res) => {
  */
 
 export const logout = (req, res) => {
-  console.log("here");
   req.logout((err) => {
     if (err) {
       console.error("Logout error:", err);
