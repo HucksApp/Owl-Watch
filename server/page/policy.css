@@ -14,12 +14,15 @@ body.policy{
 
 .policy header {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     background-color: #666;
     font-size: 2em;
     /* text-align: center; */
     padding: 20px;
+}
+.policy header > img{
+    padding-right: 5%;
 }
 
 
