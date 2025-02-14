@@ -84,8 +84,6 @@ export const VoiceCommandProvider = ({ children }) => {
       .trim()
       .toLowerCase();
     if (event.results[event.resultIndex].isFinal) {
-      console.log("Final command received =>", transcript);
-
       // Execute commands based on recognized speech
       if (transcript.includes("close non-active tabs")) {
         closeNonActiveTabs();

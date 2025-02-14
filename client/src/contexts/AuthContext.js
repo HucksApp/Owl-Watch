@@ -64,7 +64,6 @@ export const AuthProvider = ({ children }) => {
       ? process.env.REACT_APP_API_BASE_URL_PROD
       : process.env.REACT_APP_API_BASE_URL_DEV;
   const redirectUri = `${BASE_URL}/api/auth/google/callback`;
-  console.log("redirect url====>",    redirectUri)
   useEffect(() => {
     // Check if the user is already logged in
     const fetchUser = async () => {

@@ -1,10 +1,9 @@
 {
   "manifest_version": 3,
   "name": "Owl Watch",
-  "description": "Tabs Management and Grouping, session Management, supports voice command",
+  "description": "Tabs Management , Session Management with features like Tracking and Management, Auto Grouping, voice command",
   "version": "1.0",
   "permissions": [
-    "identity",
     "tabs",
     "tabGroups",
     "storage",
@@ -12,11 +11,8 @@
     "activeTab",
     "scripting",
     "windows",
-    "webRequest",
-    "processes",
    "declarativeNetRequest",
-    "declarativeNetRequestFeedback",
-     "system.memory"
+    "declarativeNetRequestFeedback"
   ],
   "declarative_net_request": {
     "rule_resources": [
