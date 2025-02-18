@@ -58,18 +58,41 @@ export const AuthProvider = ({ children }) => {
   const authScope = process.env.REACT_APP_GOOGLE_AUTH_SCOPE;
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const BASE_URL =
     process.env.REACT_APP_STAGE === "production"
       ? process.env.REACT_APP_API_BASE_URL_PROD
       : process.env.REACT_APP_API_BASE_URL_DEV;
   const redirectUri = `${BASE_URL}/api/auth/google/callback`;
+
+  useEffect(() => {
+    const handleMessage = (event) => {
+      if (event.origin !== BASE_URL) {
+        console.error("Untrusted origin:", event.origin);
+        return;
+      }
+  
+      if (event.data && event.data.type === "auth_response") {
+        const token = event.data.token;
+        handleAuthResponse(token);
+      }
+    };
+  
+    window.addEventListener("message", handleMessage);
+  
+    return () => {
+      window.removeEventListener("message", handleMessage);
+    };
+  }, []); // Runs once on component mount
+
+  
   useEffect(() => {
     // Check if the user is already logged in
     const fetchUser = async () => {
+      setLoading(true);
       try {
         const owl_user = await getFromLocalStorage("OWL_WATCH_USER");
-
         if (owl_user) {
           setUser(owl_user);
         } else {
@@ -81,15 +104,14 @@ export const AuthProvider = ({ children }) => {
         }
       } catch (err) {
         console.error(err);
+      } finally {
+        setLoading(false); // Ensure loading is updated
       }
     };
-
-    getFromLocalStorage("OWL_WATCH_TOKEN").then((token) => {
-      if (token) {
-        fetchUser();
-      }
-    });
+    fetchUser();
   }, [token]);
+
+
 
   const handleAuthResponse = async (token) => {
     if (token) {
@@ -99,69 +121,87 @@ export const AuthProvider = ({ children }) => {
         });
         setToken(response.data);
         saveToLocalStorage("OWL_WATCH_TOKEN", response.data);
+  
+        // Fetch user data immediately after login
+        const userResponse = await axios.get(`${BASE_URL}/api/user`, {
+          withCredentials: true,
+        });
+  
+        saveToLocalStorage("OWL_WATCH_USER", userResponse.data);
+        setUser(userResponse.data);
+        
       } catch (error) {
         console.error("Error sending token to backend:", error);
+      } finally {
+        setLoading(false); // Ensure loading is set to false after processing
       }
     } else {
       console.error("ID token not found");
+      setLoading(false);
     }
   };
+
 
   const login = async () => {
-    const nonce = [...Array(30)]
-      .map(() => Math.floor(Math.random() * 36).toString(36))
-      .join("");
-
-    const authURL = `${googleAuthURL}?client_id=${clientId}&response_type=id_token&redirect_uri=${encodeURIComponent(
-      redirectUri
-    )}&scope=${authScope}&nonce=${nonce}`;
-
-    const authWindow = window.open(
-      authURL,
-      "authWindow",
-      "width=600,height=600"
-    );
-
-    // Add an event listener to listen for messages from the OAuth window
-    window.addEventListener("message", (event) => {
-      // Check the origin of the message
-      if (event.origin !== BASE_URL) {
-        console.error("Untrusted origin:", event.origin);
+    setLoading(true);
+    try {
+      const nonce = [...Array(30)]
+        .map(() => Math.floor(Math.random() * 36).toString(36))
+        .join("");
+  
+      const authURL = `${googleAuthURL}?client_id=${clientId}&response_type=id_token&redirect_uri=${encodeURIComponent(
+        redirectUri
+      )}&scope=${authScope}&nonce=${nonce}`;
+  
+      const authWindow = window.open(
+        authURL,
+        "authWindow",
+        "width=600,height=600"
+      );
+  
+      if (!authWindow) {
+        console.error("Failed to open OAuth window. Please check your popup blocker settings.");
         return;
       }
-
-      if (event.data && event.data.type === "auth_response") {
-        const token = event.data.token;
-        handleAuthResponse(token);
-
-        // Close the auth window
-        if (authWindow) {
-          //authWindow.close();
+  
+      const checkPopup = setInterval(() => {
+        try {
+          if (!authWindow || authWindow.closed) {
+            clearInterval(checkPopup);
+            setLoading(false);
+          }
+        } catch (error) {
+          console.error("Popup check error:", error);
         }
-      }
-    });
-
-    // Check if the auth window opened successfully
-    if (!authWindow) {
-      console.error(
-        "Failed to open OAuth window. Please check your popup blocker settings."
-      );
+      }, 500);
+    } catch (error) {
+      console.error("Login failed:", error);
     }
   };
+  
 
   const logout = async () => {
-    await axios.get(`${BASE_URL}/api/auth/logout`);
-    removeFromLocalStorage("OWL_WATCH_TOKEN");
-    removeFromLocalStorage("owl_watch_session");
-    removeFromLocalStorage("OWL_WATCH_USER");
-    removeFromLocalStorage("theme");
-    clearLocalStorage();
-    setUser(null);
-    navigate("/");
+    setLoading(true);
+    try {
+      await axios.get(`${BASE_URL}/api/auth/logout`);
+      removeFromLocalStorage("OWL_WATCH_TOKEN");
+      removeFromLocalStorage("owl_watch_session");
+      removeFromLocalStorage("OWL_WATCH_USER");
+      removeFromLocalStorage("theme");
+      clearLocalStorage();
+      setUser(null);
+      setToken(null); // Ensure token is cleared
+      navigate("/");
+    } catch (error) {
+      console.error("Logout failed:", error);
+    } finally {
+      setLoading(false);
+    }
   };
+  
 
   return (
-    <AuthContext.Provider value={{ user, login, logout }}>
+    <AuthContext.Provider value={{ user, login, logout, loading }}>
       {children}
     </AuthContext.Provider>
   );

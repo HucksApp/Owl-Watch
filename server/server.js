@@ -3,7 +3,6 @@ import app from "./app.js";
 import allRoutes from "./debug/debug.js";
 //import config from "config";
 
-
 const server = http.createServer(app);
 /**
  * @module server
@@ -19,9 +18,14 @@ const server = http.createServer(app);
  * If the application is running in development mode, this will log
  * all the routes that are accessible within the app.
  */
+let PORT;
 
-
-if (process.env.STAGE  === "development") allRoutes(app);
+if (process.env.STAGE === "development") {
+  allRoutes(app);
+  PORT = process.env.SERVER_PORT || 8000;
+} else {
+  PORT = process.env.PORT || 8080;
+}
 /**
  * Start the HTTP server and listen on the specified port.
  *
@@ -31,5 +35,5 @@ if (process.env.STAGE  === "development") allRoutes(app);
  * // Example log message upon successful server startup
  * console.log(`Server running on port ${PORT}`);
  */
-const PORT = process.env.SERVER_PORT || 8000;
+
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

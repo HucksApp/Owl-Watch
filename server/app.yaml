@@ -1,0 +1,19 @@
+runtime: nodejs18  # Specify the Node.js runtime version (adjust to the latest version if necessary)
+
+env: standard
+
+#instance_class: F2  # Optional, specifies the instance class for your app (adjust as needed)
+
+entrypoint: node server.js  # Adjust if your entry file is different
+
+env_variables:
+  # Define any environment variables, e.g. database URL, API keys, etc.
+  # SERVER_PORT=8000
+  STAGE: 'production'
+  GOOGLE_CLIENT_SECRET: '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'
+  GOOGLE_CLIENT_ID: '507224401037-mp7gp6kl93bjnoquu6psdfmmibu4v281.apps.googleusercontent.com'
+  DB_USER: 'owl_watch_user'
+  DB_PASSWORD: 'SWdqecjMSR5AwpFS'
+  DB_NAME: 'owl-watch-db'
+  # BASE_URL_PROD: 'https://owl-watch-438019.uc.r.appspot.com'
+

@@ -1,10 +1,11 @@
 import React, { useContext, useEffect } from "react";
-import { Button, Container, Typography } from "@mui/material";
+import { Button, Container, Typography, CircularProgress, Box} from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import { AuthContext } from "../contexts/AuthContext";
 import DarkModeIcon from "@mui/icons-material/DarkMode";
 import ContrastIcon from "@mui/icons-material/Contrast";
 import GoogleIcon from "@mui/icons-material/Google";
+import LockPersonIcon from "@mui/icons-material/LockPerson";
 import { getFromLocalStorage } from "../services/localStorage";
 /**
  * Login Component
@@ -47,8 +48,9 @@ import { getFromLocalStorage } from "../services/localStorage";
  */
 
 const Login = ({ toggleTheme, isDarkMode }) => {
-  const { login, user } = useContext(AuthContext);
+  const { login, user, loading } = useContext(AuthContext);
   const navigate = useNavigate();
+  console.log("loading",loading);
 
   useEffect(() => {
     const handleUserView = async () => {
@@ -70,7 +72,15 @@ const Login = ({ toggleTheme, isDarkMode }) => {
       <Typography variant="h4" gutterBottom>
         Login to Owl Watch
       </Typography>
-      <Button
+      {loading ? (<Box sx={{ display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", height: "50vh" }}>
+          <CircularProgress size={60} sx={{ marginBottom: "20px" }} />
+          <Typography variant="body2" sx={{ textAlign: "center", display: "flex", alignItems: "center", gap: "5px",fontSize: '1.2em', fontWeight: 800 }}>
+            <LockPersonIcon sx={{ fontSize: 24, color:"red" }} /> Do not close the window until credentials is verified.
+          </Typography>
+        </Box>
+      ) :
+        (<>
+        <Button
         variant="contained"
         onClick={toggleTheme}
         startIcon={
@@ -88,6 +98,8 @@ const Login = ({ toggleTheme, isDarkMode }) => {
       <Button variant="contained" onClick={login} startIcon={<GoogleIcon />}>
         Login with Google
       </Button>
+      </>)
+      }
     </Container>
   );
 };
