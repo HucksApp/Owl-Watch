@@ -37,8 +37,8 @@ Owl Watch is a  🧩 Chrome extension designed to help users manage their tabs a
 - Authentication: Passport, Google Oauth
 - Database: MongoDb
 
-### [🌏 Chrome Store](https://chromewebstore.google.com/detail/owl-watch/kbapldbpbefgjacojlmapleidhcmjfmc?authuser=0&hl=en-GB)
-### [🏠 Tool Home Page](https://owl-watch-438019.uc.r.appspot.com/)
+## [🌏 Chrome Store](https://chromewebstore.google.com/detail/owl-watch/kbapldbpbefgjacojlmapleidhcmjfmc?authuser=0&hl=en-GB)
+## [🏠 Tool Home Page](https://owl-watch-438019.uc.r.appspot.com/)
 
 ## 🎥 Demo Video
 *  [Youtube demo](https://www.youtube.com/watch?v=vmEDoCKFEvg "owl_watch")
