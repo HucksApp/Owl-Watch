@@ -69,9 +69,14 @@ export const AuthProvider = ({ children }) => {
   useEffect(() => {
     const handleMessage = (event) => {
       if (event.origin !== BASE_URL) {
+        console.log('Received message from:', event.origin);
+        console.log('Message content:', event.data);
         console.error("Untrusted origin:", event.origin);
         return;
       }
+      console.log('Received message from:', event.origin);
+      console.log('Message content:', event.data);
+      console.error("Untrusted origin:", event.origin);
   
       if (event.data && event.data.type === "auth_response") {
         const token = event.data.token;
@@ -100,6 +105,7 @@ export const AuthProvider = ({ children }) => {
             withCredentials: true,
           });
           saveToLocalStorage("OWL_WATCH_USER", response.data);
+          console.log(response.data)
           setUser(response.data);
         }
       } catch (err) {

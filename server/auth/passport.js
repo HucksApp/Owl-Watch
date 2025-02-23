@@ -38,6 +38,7 @@ passport.use(
      */
 
     async (accessToken, refreshToken, profile, done) => {
+      console.log("Google Profile:", profile); // Debugging line
       try {
         let user = await User.findOne({ googleId: profile.id });
         if (!user) {

@@ -29,6 +29,7 @@ const __dirname = path.dirname(__filename);
  * @returns {void} Sends the auth.html file to the client.
  */
 export const googleCallback = (req, res) => {
+
   res.sendFile(path.join(__dirname, "..", "page", "auth.html"));
 };
 
@@ -46,6 +47,7 @@ export const googleCallback = (req, res) => {
  * @returns {void} Responds with a success message and token or an error message.
  */
 export const googleLogin = async (req, res) => {
+
   const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
   const { token } = req.body;
 
@@ -59,10 +61,8 @@ export const googleLogin = async (req, res) => {
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
-
     const payload = ticket.getPayload();
     let user = await User.findOne({ googleId: payload.sub });
-
     // If the user does not exist, create a new one
     if (!user) {
       user = new User({
@@ -73,13 +73,11 @@ export const googleLogin = async (req, res) => {
       });
       await user.save();
     }
-
     req.logIn(user, (err) => {
       if (err) {
         console.error("Error logging in user:", err);
         return res.redirect(`${process.env.Client_Base_Url}/login`); // Redirect to login on error
       }
-
       res.status(200).json({ token });
     });
   } catch (err) {

@@ -1,0 +1,105 @@
+body.home {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    line-height: 1.6;
+    color: #333;
+    background-color: #f4f4f4;
+    text-align: center;
+}
+
+header {
+    background-color: #444;
+    color: white;
+    padding: 40px 20px;
+}
+
+header img {
+    height: 80px;
+}
+
+.tagline {
+    font-size: 1.2em;
+    margin-top: 10px;
+}
+
+.install-btn {
+    display: inline-block;
+    background: #ff9800;
+    color: white;
+    padding: 12px 20px;
+    text-decoration: none;
+    font-size: 1.2em;
+    border-radius: 5px;
+    margin-top: 15px;
+}
+
+.install-btn:hover {
+    background: #e68900;
+}
+
+.intro, .features, .how-it-works, .why-choose, .cta {
+    background: white;
+    padding: 40px 20px;
+    margin: 20px auto;
+    max-width: 900px;
+    border-radius: 10px;
+    box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.features h2 {
+    margin-bottom: 20px;
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 20px;
+    text-align: center;
+}
+
+.how-it-works ol {
+    text-align: left;
+    max-width: 600px;
+    margin: auto;
+    padding-left: 20px;
+}
+
+.why-choose ul {
+    list-style: none;
+    padding: 0;
+}
+
+.why-choose li {
+    padding-left: 30px;
+    margin-bottom: 10px;
+    text-align: left;
+    max-width: 600px;
+    margin: auto;
+}
+
+.cta {
+    background-color: #ff9800;
+    color: white;
+}
+
+footer {
+    background-color: #333;
+    color: white;
+    padding: 20px;
+    margin-top: 20px;
+}
+
+footer a {
+    color: #ff9800;
+    text-decoration: none;
+    margin-left: 10px;
+}
+
+footer a:hover {
+    text-decoration: underline;
+}
+
+bold{
+ font-weight: 900;   
+}

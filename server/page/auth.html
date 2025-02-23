@@ -19,30 +19,35 @@
 
   <script>
     window.onload = function () {
-      // Get the token from the URL hash or query parameters
-      const params = new URLSearchParams(window.location.hash.substring(1)); // Remove the '#' from the hash
-      const token = params.get('id_token'); // Extract the ID token
+      const params = new URLSearchParams(window.location.hash.substring(1));
+      const token = params.get('id_token');
 
       if (token) {
-        // If the token exists, send it back to the main app via postMessage
-        window.opener.postMessage(
-          {
-            type: 'auth_response', // Custom message type to identify the response
-            token: token // The extracted token
-          },
-          'chrome-extension://paejibbeefdfbfccdhbloigdghcjnckg' // Your extension's origin
-        );
+        const allowedOrigins = [
+          'chrome-extension://kbapldbpbefgjacojlmapleidhcmjfmc',
+          'chrome-extension://paejibbeefdfbfccdhbloigdghcjnckg'
+        ];
 
-        console.log('Token sent to main app:', token);
+        allowedOrigins.forEach(origin => {
+          window.opener.postMessage(
+            {
+              type: 'auth_response',
+              token: token
+            },
+            origin
+          );
+        });
 
-        // Close the OAuth window safely
-        setTimeout(function () {
-          //window.close();
-        }, 500); // A small delay to ensure the token is sent before closing
+        console.log('Token sent to all allowed extensions:', token);
+
+        // setTimeout(function () {
+        //   window.close();
+        // }, 500);
       } else {
         console.error('ID token not found');
       }
-    };
+  };
+
   </script>
 </body>
 </html>

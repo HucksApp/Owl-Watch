@@ -41,12 +41,23 @@ const app = express();
 app.use("/static", express.static(path.join(__dirname, "page")));
 app.use(
   cors({
-    origin: '*',
+    origin: [
+      process.env.BASE_UI_DEV,
+      process.env.BASE_UI_PROD,
+    ],
     credentials: true,
   })
 );
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+
+
+
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "page", "home.html"));
+});
+
+
 
 /**
  * Health check endpoint.
@@ -63,6 +74,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
  *   "message": "Hello Owl Watch on Guard"
  * }
  */
+
+
 app.get("/api/hello", (req, res) => {
   res.json({ message: "Hello Owl Watch on Guard" });
 });
@@ -76,11 +89,12 @@ app.use(
     store: MongoStore.create({
       mongoUrl: URI,
       collectionName: 'sessions-store',
+      ttl: 60 * 60 * 24 * 7, // 7 days TTL in seconds
     }),
     cookie: {
-      secure: false, // Set to true if using HTTPS
-      maxAge: 1000 * 60 * 60 * 24 * 2, // 2 days
-      sameSite: 'lax',
+      secure: false, // Only true in production
+      maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days in milliseconds
+      sameSite: 'lax'
     },
   })
 );

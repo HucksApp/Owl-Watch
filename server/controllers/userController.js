@@ -33,3 +33,8 @@ export const getPolicy = async (req, res) => {
       res.sendFile(path.join(__dirname, "..", "page", "policy.html"));
 };
 
+
+export const getHomePage = async (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "page", "home.html"));
+};
+
