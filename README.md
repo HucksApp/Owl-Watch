@@ -71,4 +71,4 @@ No known bugs at this time.
 Aremu Mohammad Abiodun ~ [Github](https://github.com/Hucksapp) : [Twitter](https://twitter.com/hucks_jake)  
 
 ## License ©
-@HucksWare All Rights Reserved 
+©HucksWare All Rights Reserved 
